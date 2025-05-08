@@ -2,9 +2,81 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Logo;
+use App\Models\Producto;
+use App\Models\ProductoImg;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ProductoImgController extends Controller
 {
-    //
+    public function index($id)
+    {
+        $producto = Producto::findOrFail($id);
+        $imagenes = ProductoImg::where('producto_id', $id)->orderBy('orden', 'asc')->get();
+        $logo = Logo::where('seccion', 'dashboard')->first();
+        return inertia('Admin/Imagenes', [
+            'imagenes' => $imagenes,
+            'producto' => $producto,
+            'logo' => $logo
+        ]);
+    }
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'producto_id' => 'required|exists:productos,id',
+            'path' => 'required|mimes:jpeg,png,jpg,gif|max:2048',
+            'orden' => 'required|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            return $this->error_response($validator->messages()->first());
+        }
+        $imageName = null;
+        if ($request->hasFile('path')) {
+            $file = $request->file('path');
+            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+            $imageName = $file->storeAs('images', $fileName, 'public');
+        }
+        $imagen = ProductoImg::create([
+            'orden'              => $request->orden,
+            'path'               => $imageName,
+            'producto_id'        => $request->producto_id,
+        ]);
+        return $this->success_response('Imagen creadas exitosamente.');
+    }
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'path' => 'nullable|mimes:jpeg,png,jpg,gif|max:2048',
+            'orden' => 'nullable|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            return $this->error_response($validator->messages()->first());
+        }
+        $productoImg = ProductoImg::findOrFail($id);
+        if ($request->hasFile('path')) {
+            if ($productoImg->path && Storage::disk('public')->exists($productoImg->path)) {
+                Storage::disk('public')->delete($productoImg->path);
+            }
+            $file = $request->file('path');
+            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+            $imageName = $file->storeAs('images', $fileName, 'public');
+            $productoImg->path = $imageName;
+        }
+        // Solo se actualizan los campos si el request contiene un valor
+        $productoImg->update(array_filter([
+            'orden' => $request->orden,
+        ]));
+        return $this->success_response('Imagen actualizada exitosamente.');
+    }
+    public function destroy($id)
+    {
+        $productoImg = ProductoImg::findOrFail($id);
+        if ($productoImg->path && Storage::disk('public')->exists($productoImg->path)) {
+            Storage::disk('public')->delete($productoImg->path);
+        }
+        $productoImg->delete();
+        return $this->success_response('Imagen eliminada exitosamente.');
+    }
 }

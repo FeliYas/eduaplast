@@ -10,6 +10,7 @@ class Contacto extends Model
         'direccion',
         'telefono',
         'email',
+        'whatsapp',
         'iframe',
     ];
 }

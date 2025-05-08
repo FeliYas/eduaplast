@@ -2,7 +2,7 @@
   <div class="bg-gray-100 shadow-md flex justify-between items-center z-50 transition-all duration-300 hover:shadow-xl"
     style="height: 64px; padding: 0 2rem; border-bottom: 1px solid rgba(13, 129, 65, 0.1);">
     <div class="flex items-center">
-      <button @click="toggleSidebar" class="text-gray-600 hover:text-gray-900 mr-3">
+      <button @click="toggleSidebar" class="text-gray-600 hover:text-gray-900 mr-3 cursor-pointer transition-all duration-200">
         <i class="fa-solid fa-bars"></i>
       </button>
       <h1 class="font-thin text-lg text-main-color">Panel de Administración</h1>

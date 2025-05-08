@@ -9,7 +9,11 @@ const props = defineProps({
     data: Array,
     deleteRoute: String,
     updateRoute: String,
-    createRoute: String
+    createRoute: String,
+    categorias: Array,
+    toggleDestacadoRoute: String,
+    imgsRoute: String,
+    productoId: Number // Add productoId prop
 });
 
 const showCreateModal = ref(false);
@@ -22,6 +26,8 @@ const editFormData = ref({});
 const createFormData = ref({});
 const fileInputLabel = ref('Elija una imagen');
 const editFileInputLabel = ref('Elija una nueva imagen');
+const fichaInputLabel = ref('Elija un PDF');
+const editFichaInputLabel = ref('Elija un nuevo PDF');
 
 // Para la vista previa de imágenes
 const editImagePreview = ref('');
@@ -30,13 +36,15 @@ const openCreateModal = () => {
     // Reset form data
     createFormData.value = {};
     props.columns.forEach(column => {
-        if (column !== 'id') {
+        if (column !== 'id' && column !== 'destacado') {
             createFormData.value[column] = '';
         }
         if (column === 'role') {
             createFormData.value[column] = 'user'; //
         }
     });
+    // Set producto_id in createFormData
+    createFormData.value.producto_id = props.productoId;
     showPassword.value = false;
     showCreateModal.value = true;
 };
@@ -99,7 +107,58 @@ const handleEditFileChange = (event) => {
         editFileInputLabel.value = 'Elija una nueva imagen';
     }
 };
+const handleCreateFichaChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        // Comprobar que sea un PDF
+        if (file.type !== 'application/pdf') {
+            alert('Solo se permiten archivos PDF');
+            event.target.value = '';
+            return;
+        }
 
+        // Comprobar el tamaño (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('El archivo debe ser menor a 2MB');
+            event.target.value = '';
+            return;
+        }
+
+        fichaInputLabel.value = file.name;
+        createFormData.value.ficha = file;
+    } else {
+        fichaInputLabel.value = 'Elija un PDF';
+    }
+};
+const handleEditFichaChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        // Comprobar que sea un PDF
+        if (file.type !== 'application/pdf') {
+            alert('Solo se permiten archivos PDF');
+            event.target.value = '';
+            return;
+        }
+
+        // Comprobar el tamaño (2MB = 2 * 1024 * 1024 bytes)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('El archivo debe ser menor a 2MB');
+            event.target.value = '';
+            return;
+        }
+
+        editFichaInputLabel.value = file.name;
+        editFormData.value.ficha = file;
+    } else {
+        editFichaInputLabel.value = 'Elija un nuevo PDF';
+    }
+};
+const openFicha = (fichaPath) => {
+    if (fichaPath) {
+        // Abrir en una nueva pestaña para descargar/ver el PDF
+        window.open(`/storage/${fichaPath}`, '_blank');
+    }
+};
 const submitCreateForm = () => {
     // Crear FormData para enviar archivos
     const formData = new FormData();
@@ -124,6 +183,9 @@ const submitEditForm = () => {
             if (key === 'path' && typeof editFormData.value[key] === 'string') {
                 return;
             }
+            if (key === 'ficha' && typeof editFormData.value[key] === 'string') {
+                return;
+            }
             formData.append(key, editFormData.value[key]);
         }
     });
@@ -141,6 +203,12 @@ const submitEditForm = () => {
     });
 };
 
+const getCategoriaName = (categoriaId) => {
+    if (!props.categorias || !categoriaId) return 'N/A';
+    const categoria = props.categorias.find(cat => cat.id === categoriaId);
+    return categoria ? categoria.titulo.charAt(0).toUpperCase() + categoria.titulo.slice(1) : 'N/A';
+};
+
 const submitDeleteForm = () => {
     const deleteUrl = props.deleteRoute.includes('__ID__')
         ? props.deleteRoute.replace('__ID__', currentItemId.value)
@@ -151,6 +219,28 @@ const submitDeleteForm = () => {
             closeDeleteModal();
         }
     });
+};
+
+const toggleDestacado = (id, isChecked) => {
+    fetch(props.toggleDestacadoRoute, {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id: id,
+            destacado: isChecked ? 1 : 0
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Destacado actualizado correctamente");
+            } else {
+                console.error("Error al actualizar el destacado");
+            }
+        });
 };
 </script>
 
@@ -172,7 +262,15 @@ const submitDeleteForm = () => {
             <div class="grid-header">
                 <template v-for="column in columns" :key="column">
                     <div v-if="column !== 'password'" class="grid-header-cell">
-                        {{ column === 'path' ? 'Imagen' : column.charAt(0).toUpperCase() + column.slice(1) }}
+                        <template v-if="column === 'categoria_id'">
+                            Categoria
+                        </template>
+                        <template v-else-if="column === 'path'">
+                            Imagen
+                        </template>
+                        <template v-else>
+                            {{ column.charAt(0).toUpperCase() + column.slice(1) }}
+                        </template>
                     </div>
                 </template>
                 <div class="grid-header-cell">
@@ -191,7 +289,7 @@ const submitDeleteForm = () => {
                 <template v-else>
                     <div v-for="row in data" :key="row.id" class="grid-row">
                         <template v-for="column in columns" :key="column">
-                            <div v-if="column !== 'password'"
+                            <div v-if="column !== 'password' && column !== 'destacado'"
                                 :class="['grid-cell', column === 'path' ? 'grid-image-cell' : '']">
                                 <!-- Celda de imagen -->
                                 <template v-if="column === 'path'">
@@ -205,6 +303,54 @@ const submitDeleteForm = () => {
                                         </svg>
                                     </div>
                                 </template>
+                                <!-- Campo categoria_id con nombre de categoría -->
+                                <template v-else-if="column === 'categoria_id'">
+                                    {{ getCategoriaName(row[column]) }}
+                                </template>
+                                <!-- Campo imagenes con enlace -->
+                                <template v-else-if="column === 'imagenes'">
+                                    <div class="flex justify-center">
+                                        <a :href="`${props.imgsRoute}/${row.id}`"
+                                            class="text-blue-900 hover:text-blue-500 transition duration-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-6 w-6 hover:scale-110 transform transition duration-200"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </template>
+                                <!-- Celda de ficha -->
+                                <template v-else-if="column === 'ficha'">
+                                    <div class="flex justify-center">
+                                        <template v-if="row.ficha">
+                                            <button @click="openFicha(row.ficha)"
+                                                class="text-blue-900 hover:text-blue-500 flex items-center gap-1 cursor-pointer">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                                <span class="text-xs">Ver PDF</span>
+                                            </button>
+                                        </template>
+                                        <template v-else>
+                                            <span class="text-gray-400 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636" />
+                                                </svg>
+                                                <span class="text-xs">Sin ficha</span>
+                                            </span>
+                                        </template>
+                                    </div>
+                                </template>
                                 <!-- Campo descripcion con v-html -->
                                 <template v-else-if="column === 'descripcion'">
                                     <div class="custom-editor max-h-[100px] overflow-y-auto" v-html="row[column]"></div>
@@ -214,6 +360,20 @@ const submitDeleteForm = () => {
                                     {{ row[column] ? row[column].charAt(0).toUpperCase() + row[column].slice(1) : '' }}
                                 </template>
                             </div>
+                            <!-- Destacado toggle -->
+                            <template v-if="column === 'destacado'">
+                                <div class="grid-cell">
+                                    <div class="flex justify-center">
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" :checked="row.destacado"
+                                                @change="toggleDestacado(row.id, $event.target.checked)">
+                                            <div
+                                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#374977]">
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </template>
                         </template>
 
                         <!-- Celda de acciones -->
@@ -271,9 +431,13 @@ const submitDeleteForm = () => {
 
                             <!-- Formulario -->
                             <div class="p-6 text-black">
-                                <div v-for="column in columns" :key="column" v-if="column !== 'id'" class="mb-4 ">
+                                <div v-for="column in columns" :key="column" class="mb-4 ">
+
+                                    <template v-if="column === 'imagenes'"></template>
+                                    <template v-else-if="column === 'destacado'"></template>
+
                                     <!-- Manejo de campo path/imagen -->
-                                    <template v-if="column === 'path'">
+                                    <template v-else-if="column === 'path'">
                                         <label :for="column" class="block font-medium text-gray-700 mb-1">Imagen</label>
                                         <div class="relative w-full">
                                             <label :for="column"
@@ -283,6 +447,37 @@ const submitDeleteForm = () => {
                                             <input type="file" :id="column" @change="handleCreateFileChange"
                                                 class="hidden">
                                         </div>
+                                    </template>
+
+                                    <!-- Campo categoria_id con select de categorías -->
+                                    <template v-else-if="column === 'categoria_id'">
+                                        <label :for="column" class="block font-medium text-gray-700 mb-1">
+                                            Categoria
+                                        </label>
+                                        <select :id="column" v-model="createFormData[column]"
+                                            class="w-full border border-main-color px-4 py-2 rounded-md focus:ring-2 focus:ring-opacity-50 focus:ring-main-color focus:border-main-color"
+                                            required>
+                                            <option value="" disabled>Seleccione una categoría</option>
+                                            <option v-for="categoria in categorias" :key="categoria.id"
+                                                :value="categoria.id">
+                                                {{ categoria.titulo }}
+                                            </option>
+                                        </select>
+                                    </template>
+
+                                    <!-- Campo ficha-->
+                                    <template v-else-if="column === 'ficha'">
+                                        <label :for="column" class="block font-medium text-gray-700 mb-1">Ficha Técnica
+                                            - PDF (Opcional)</label>
+                                        <div class="relative w-full">
+                                            <label :for="column"
+                                                class="block border border-main-color rounded-md bg-white px-4 py-2 w-full text-gray-600 cursor-pointer text-center">
+                                                {{ fichaInputLabel }}
+                                            </label>
+                                            <input type="file" :id="column" @change="handleCreateFichaChange"
+                                                accept="application/pdf" class="hidden">
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Máximo 2MB, formato PDF</p>
                                     </template>
 
                                     <!-- Campo role con select -->
@@ -326,7 +521,7 @@ const submitDeleteForm = () => {
                                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
-                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943-9.543-7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                                                 </svg>
                                             </button>
                                         </div>
@@ -404,9 +599,13 @@ const submitDeleteForm = () => {
 
                             <!-- Formulario -->
                             <div class="p-4 text-black">
-                                <div v-for="column in columns" :key="column" v-if="column !== 'id'" class="mb-4">
+                                <div v-for="column in columns" :key="column" class="mb-4">
+
+                                    <template v-if="column === 'imagenes'"></template>
+                                    <template v-else-if="column === 'destacado'"></template>
+
                                     <!-- Manejo de campos específicos -->
-                                    <template v-if="column === 'path'">
+                                    <template v-else-if="column === 'path'">
                                         <label :for="`edit_${column}`"
                                             class="block font-medium text-gray-700 mb-1">Imagen</label>
                                         <div class="relative w-full">
@@ -422,6 +621,56 @@ const submitDeleteForm = () => {
                                             <p class="block text-gray-700">Imagen actual:</p>
                                             <img :src="editImagePreview" alt="Imagen actual"
                                                 class="w-full h-40 object-contain border border-main-color rounded-md bg-gray-200 p-2">
+                                        </div>
+                                    </template>
+
+                                    <!-- Campo categoria_id con select de categorías -->
+                                    <template v-else-if="column === 'categoria_id'">
+                                        <label :for="`edit_${column}`" class="block font-medium text-gray-700 mb-1">
+                                            Categoria
+                                        </label>
+                                        <select :id="`edit_${column}`" v-model="editFormData[column]"
+                                            class="w-full border border-main-color px-4 py-2 rounded-md focus:ring-2 focus:ring-opacity-50 focus:ring-main-color focus:border-main-color"
+                                            required>
+                                            <option value="" disabled>Seleccione una categoría</option>
+                                            <option v-for="categoria in categorias" :key="categoria.id"
+                                                :value="categoria.id">
+                                                {{ categoria.titulo }}
+                                            </option>
+                                        </select>
+                                    </template>
+
+                                    <!-- Manejo de campo ficha -->
+                                    <template v-else-if="column === 'ficha'">
+                                        <label :for="`edit_${column}`"
+                                            class="block font-medium text-gray-700 mb-1">Ficha Técnica - PDF
+                                            (Opcional)</label>
+                                        <div class="relative w-full">
+                                            <label :for="`edit_${column}`"
+                                                class="block border border-main-color rounded-md bg-white px-4 py-2 w-full text-gray-600 cursor-pointer text-center">
+                                                {{ editFichaInputLabel }}
+                                            </label>
+                                            <input type="file" :id="`edit_${column}`" @change="handleEditFichaChange"
+                                                accept="application/pdf" class="hidden">
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Máximo 2MB, formato PDF</p>
+
+                                        <!-- Mostrar ficha actual si existe -->
+                                        <div v-if="editFormData.ficha && typeof editFormData.ficha === 'string'"
+                                            class="mt-2">
+                                            <p class="block text-gray-700">Ficha actual:</p>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                                <button @click="openFicha(editFormData.ficha)" type="button"
+                                                    class="text-blue-500 hover:underline text-sm">
+                                                    Ver ficha actual
+                                                </button>
+                                            </div>
                                         </div>
                                     </template>
 
@@ -465,7 +714,7 @@ const submitDeleteForm = () => {
                                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
-                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943-9.543-7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                                                 </svg>
                                             </button>
                                         </div>

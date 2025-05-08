@@ -10,6 +10,7 @@ class Categoria extends Model
         'orden',
         'path',
         'titulo',
+        'destacado',
     ];
 
     public function productos()

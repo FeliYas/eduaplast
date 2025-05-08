@@ -31,8 +31,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(Toast, {
-                // Default options
-                position: 'top-right',
+                position: 'bottom-right',
                 timeout: 5000,
                 closeOnClick: true,
                 pauseOnHover: true,

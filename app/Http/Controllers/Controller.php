@@ -19,11 +19,11 @@ class Controller extends BaseController
      */
     protected function success_response($message, $data = [])
     {
-        return redirect()->back()->with([
-            'message' => $message,
-            'type' => 'success',
-            'data' => $data
-        ]);
+        session()->flash('message', $message);
+        session()->flash('type', 'success');
+        session()->flash('data', $data);
+        
+        return redirect()->back();
     }
 
     /**
@@ -35,11 +35,11 @@ class Controller extends BaseController
      */
     protected function error_response($message, $data = [])
     {
-        return redirect()->back()->with([
-            'message' => $message,
-            'type' => 'error',
-            'data' => $data
-        ]);
+        session()->flash('message', $message);
+        session()->flash('type', 'error');
+        session()->flash('data', $data);
+        
+        return redirect()->back();
     }
 
     /**
@@ -51,11 +51,11 @@ class Controller extends BaseController
      */
     protected function warning_response($message, $data = [])
     {
-        return redirect()->back()->with([
-            'message' => $message,
-            'type' => 'warning',
-            'data' => $data
-        ]);
+        session()->flash('message', $message);
+        session()->flash('type', 'warning');
+        session()->flash('data', $data);
+        
+        return redirect()->back();
     }
 
     /**
@@ -67,10 +67,10 @@ class Controller extends BaseController
      */
     protected function info_response($message, $data = [])
     {
-        return redirect()->back()->with([
-            'message' => $message,
-            'type' => 'info',
-            'data' => $data
-        ]);
+        session()->flash('message', $message);
+        session()->flash('type', 'info');
+        session()->flash('data', $data);
+        
+        return redirect()->back();
     }
 }

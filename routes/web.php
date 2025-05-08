@@ -3,10 +3,16 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\ContactoController;
+use App\Http\Controllers\ContenidoController;
 use App\Http\Controllers\LogoController;
+use App\Http\Controllers\MatriceriaController;
 use App\Http\Controllers\MetadatoController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NosotroController;
 use App\Http\Controllers\NovedadeController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ProductoImgController;
 use App\Http\Controllers\SectoreController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\UsuarioController;
@@ -26,18 +32,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 Route::middleware(['auth', 'verified'])->group(function () {
+    //rutas de los sliders del dashboard
     Route::get('/admin/home/slider', [SliderController::class, 'index'])->name('admin.slider');    
     Route::post('/admin/home/slider/store', [SliderController::class, 'store'])->name('slider.store');
     Route::put('/admin/home/slider/update/{id}', [SliderController::class, 'update'])->name('slider.update');
     Route::delete('/admin/home/slider/delete/{id}', [SliderController::class, 'destroy'])->name('slider.destroy');
+    //rutas de los contenidos del dashboard
+    Route::get('/admin/home/contenido', [ContenidoController::class, 'index'])->name('contenido.dashboard');
+    Route::post('/admin/home/contenido/update/{id}', [ContenidoController::class, 'update'])->name('contenido.update');
 
+    //rutas de las nosotros del dashboard
+    Route::get('/admin/nosotros', [NosotroController::class, 'index'])->name('nosotros.dashboard');
+    Route::post('/admin/nosotros/update/{id}', [NosotroController::class, 'update'])->name('nosotros.update');
+    Route::post('/admin/nosotros/{id}/tarjeta/{num}/update', [NosotroController::class, 'updateCard'])->name('tarjetanos.update');
 
-
+    //rutas de los categorias del dashboard
     Route::get('/admin/productos/categorias', [CategoriaController::class, 'index'])->name('categorias.dashboard');
     Route::post('/admin/productos/categorias/store', [CategoriaController::class, 'store'])->name('categorias.store');
     Route::put('/admin/productos/categorias/update/{id}', [CategoriaController::class, 'update'])->name('categorias.update');
     Route::delete('/admin/productos/categorias/destroy/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy');
+    Route::post('/admin/productos/categorias/destacado', [CategoriaController::class, 'toggleDestacado'])->name('categorias.toggleDestacado');
 
+    //rutas de los productos del dashboard
+    Route::get('/admin/productos/productos', [ProductoController::class, 'index'])->name('productos.dashboard');
+    Route::post('/admin/productos/productos/store', [ProductoController::class, 'store'])->name('productos.store');
+    Route::put('/admin/productos/productos/update/{id}', [ProductoController::class, 'update'])->name('productos.update');
+    Route::delete('/admin/productos/productos/delete/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
+    Route::get('/admin/productos/productos/imagenes/{id}', [ProductoImgController::class, 'index'])->name('imagenes.dashboard');
+    Route::post('/admin/productos/productos/imagenes/store', [ProductoImgController::class, 'store'])->name('imagenes.store');
+    Route::put('/admin/productos/productos/imagenes/update/{id}', [ProductoImgController::class, 'update'])->name('imagenes.update');
+    Route::delete('/admin/productos/productos/imagenes/delete/{id}', [ProductoImgController::class, 'destroy'])->name('imagenes.destroy');
 
     //rutas de las sectores del dashboard
     Route::get('/admin/sectores', [SectoreController::class, 'index'])->name('sectores.dashboard');
@@ -45,6 +69,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/admin/sectores/update/{id}', [SectoreController::class, 'update'])->name('sectores.update');
     Route::delete('/admin/sectores/destroy/{id}', [SectoreController::class, 'destroy'])->name('sectores.destroy');
 
+    //rutas de las matricerias del dashboard
+    Route::get('/admin/matriceria', [MatriceriaController::class, 'index'])->name('matriceria.dashboard');
+    Route::post('/admin/matriceria/update/{id}', [MatriceriaController::class, 'update'])->name('matriceria.update');
 
     //rutas de las clientes del dashboard
     Route::get('/admin/clientes', [ClienteController::class, 'index'])->name('clientes.dashboard');
@@ -57,6 +84,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/admin/novedades/store', [NovedadeController::class, 'store'])->name('novedades.store');
     Route::put('/admin/novedades/update/{id}', [NovedadeController::class, 'update'])->name('novedades.update');
     Route::delete('/admin/novedades/destroy/{id}', [NovedadeController::class, 'destroy'])->name('novedades.destroy');
+
+    //rutas del contacto del dashboard
+    Route::get('/admin/contacto', [ContactoController::class, 'index'])->name('contacto.dashboard');
+    Route::put('/admin/contacto/update/{id}', [ContactoController::class, 'update'])->name('contacto.update');
 
     //rutas de los logos del dashboard
     Route::get('/admin/logos', [LogoController::class, 'index'])->name('logos.dashboard');

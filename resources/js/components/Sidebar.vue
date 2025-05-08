@@ -40,7 +40,7 @@
                 </Link>
               </li>
               <li>
-                <Link href="/admin/contenido"
+                <Link href="/admin/home/contenido"
                   class="block pl-10 py-2 text-gray-200 hover:text-white rounded-lg transition-all duration-200 my-1 cursor-pointer">
                 <span class="opacity-80 hover:opacity-100 transition-opacity flex items-center">
                   <i class="fa-solid fa-align-left w-5 mr-2 text-xs"></i>

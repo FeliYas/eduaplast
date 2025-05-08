@@ -85,8 +85,6 @@ const submitCreateForm = () => {
   formData.append('orden', createForm.orden);
   formData.append('titulo', createForm.titulo);
   formData.append('descripcion', createForm.descripcion);
-  console.log(createForm.descripcion);
-
   if (createForm.path) {
     formData.append('path', createForm.path);
   }
