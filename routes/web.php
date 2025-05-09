@@ -1,28 +1,27 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\ClienteController;
-use App\Http\Controllers\ContactoController;
-use App\Http\Controllers\ContenidoController;
-use App\Http\Controllers\LogoController;
-use App\Http\Controllers\MatriceriaController;
-use App\Http\Controllers\MetadatoController;
-use App\Http\Controllers\NewsletterController;
-use App\Http\Controllers\NosotroController;
-use App\Http\Controllers\NovedadeController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\ProductoImgController;
-use App\Http\Controllers\SectoreController;
-use App\Http\Controllers\SliderController;
-use App\Http\Controllers\UsuarioController;
-use App\Models\Slider;
+use App\Http\Controllers\Admin\CategoriaController;
+use App\Http\Controllers\Admin\ClienteController;
+use App\Http\Controllers\Admin\ContactoController;
+use App\Http\Controllers\Admin\ContenidoController;
+use App\Http\Controllers\Admin\LogoController;
+use App\Http\Controllers\Admin\MatriceriaController;
+use App\Http\Controllers\Admin\MetadatoController;
+use App\Http\Controllers\Admin\NewsletterController;
+use App\Http\Controllers\Admin\NosotroController;
+use App\Http\Controllers\Admin\NovedadeController;
+use App\Http\Controllers\Admin\ProductoController;
+use App\Http\Controllers\Admin\ProductoImgController;
+use App\Http\Controllers\Admin\SectoreController;
+use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Front\HomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
+
+Route::get('/', [HomeController::class, 'index'])->name('home');   
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/adm', function () {

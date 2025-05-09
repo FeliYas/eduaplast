@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3'
 </script>
 <template>
+
   <Head>
     <title>Dashboard</title>
   </Head>
@@ -22,6 +23,8 @@ import { Head } from '@inertiajs/vue3'
 <script>
 import Sidebar from '@/components/Sidebar.vue';
 import NavbarAdmin from '@/components/NavbarAdmin.vue';
+import { useToast } from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 
 export default {
   components: {
@@ -69,10 +72,32 @@ export default {
 
       document.body.appendChild(form);
       form.submit();
+    },
+    notification({ message = "", type = "success" }) {
+      const toast = useToast();
+      toast(
+        message,
+        {
+          type: type,
+          position: "bottom-right",
+          maxToasts: 2,
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: true,
+          hideProgressBar: false,
+          closeButton: "button",
+          icon: true,
+          rtl: false
+        }
+      );
     }
   },
   mounted() {
-    
+    this.notification({ message: "Sectores cargados correctamentes" });
   }
 }
 </script>

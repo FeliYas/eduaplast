@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+use App\Models\Contenido;
 use App\Models\Logo;
-use App\Models\Matriceria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
-class MatriceriaController extends Controller
+class ContenidoController extends Controller
 {
     public function index()
     {
-        $matriceria = Matriceria::first();
+        $contenido = Contenido::first();
         $logo = Logo::where('seccion', 'dashboard')->first();
-        return inertia('Admin/Matriceria', [
-            'matriceria' => $matriceria,
+        return inertia('Admin/Contenido', [
+            'contenido' => $contenido,
             'logo' => $logo
         ]);
     }
@@ -29,14 +30,14 @@ class MatriceriaController extends Controller
         if ($validator->fails()) {
             return $this->error_response($validator->messages()->first());
         }
-        $matriceria = Matriceria::findOrFail($id);
+        $contenido = Contenido::findOrFail($id);
 
-        $matriceria->titulo = $request->titulo;
-        $matriceria->descripcion = $request->descripcion;
+        $contenido->titulo = $request->titulo;
+        $contenido->descripcion = $request->descripcion;
 
         if ($request->hasFile('path')) {
-            if ($matriceria->path && Storage::disk('public')->exists($matriceria->path)) {
-                Storage::disk('public')->delete($matriceria->path);
+            if ($contenido->path && Storage::disk('public')->exists($contenido->path)) {
+                Storage::disk('public')->delete($contenido->path);
             }
             // Generar un nombre único para la nueva imagen
             $imageName = uniqid() . '.' . $request->file('path')->getClientOriginalExtension();
@@ -45,11 +46,11 @@ class MatriceriaController extends Controller
             $filePath = $request->file('path')->storeAs('images', $imageName, 'public');
 
             // Actualizar la ruta de la imagen
-            $matriceria->path = 'images/' . $imageName; // Guardamos la ruta relativa de la imagen
+            $contenido->path = 'images/' . $imageName; // Guardamos la ruta relativa de la imagen
         }
-        $matriceria->save();
+        $contenido->save();
 
         // Redirigir con un mensaje de éxito
-        return $this->success_response('Matriceria propia actualizada exitosamente.');
+        return $this->success_response('Contenido del home actualizado exitosamente.');
     }
 }

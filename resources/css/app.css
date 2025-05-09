@@ -259,6 +259,28 @@
   box-shadow: 0 0 10px rgba(205, 41, 48, 0.3);
   transform: scale(1.03);
 }
+
+.btn-home-1 {
+  background-color: #CD2930;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: calc(infinity * 1px);
+  border: 1px solid #CD2930;
+  cursor: pointer;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-home-1:hover {
+  background-color: #fff;
+  color: #CD2930;
+  box-shadow: 0 0 10px rgba(55, 73, 119, 0.3);
+  transform: scale(1.03);
+}
 .line-width {
   width: 10%;
   transition: width 0.5s ease;
@@ -266,4 +288,8 @@
 
 .group:hover .line-width {
   width: 100%;
+}
+.titulo-home{
+    font-size: 40px;
+    font-weight: 700;
 }
