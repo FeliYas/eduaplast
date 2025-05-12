@@ -110,47 +110,19 @@ const handleEditFileChange = (event) => {
 const handleCreateFichaChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-        // Comprobar que sea un PDF
-        if (file.type !== 'application/pdf') {
-            alert('Solo se permiten archivos PDF');
-            event.target.value = '';
-            return;
-        }
-
-        // Comprobar el tamaño (2MB = 2 * 1024 * 1024 bytes)
-        if (file.size > 2 * 1024 * 1024) {
-            alert('El archivo debe ser menor a 2MB');
-            event.target.value = '';
-            return;
-        }
-
-        fichaInputLabel.value = file.name;
-        createFormData.value.ficha = file;
+        fileInputLabel.value = file.name;
+        createFormData.value.path = file;
     } else {
-        fichaInputLabel.value = 'Elija un PDF';
+        fileInputLabel.value = 'Elija una imagen';
     }
 };
 const handleEditFichaChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-        // Comprobar que sea un PDF
-        if (file.type !== 'application/pdf') {
-            alert('Solo se permiten archivos PDF');
-            event.target.value = '';
-            return;
-        }
-
-        // Comprobar el tamaño (2MB = 2 * 1024 * 1024 bytes)
-        if (file.size > 2 * 1024 * 1024) {
-            alert('El archivo debe ser menor a 2MB');
-            event.target.value = '';
-            return;
-        }
-
-        editFichaInputLabel.value = file.name;
-        editFormData.value.ficha = file;
+        editFileInputLabel.value = file.name;
+        editFormData.value.path = file;
     } else {
-        editFichaInputLabel.value = 'Elija un nuevo PDF';
+        editFileInputLabel.value = 'Elija una nueva imagen';
     }
 };
 const openFicha = (fichaPath) => {
@@ -183,7 +155,8 @@ const submitEditForm = () => {
             if (key === 'path' && typeof editFormData.value[key] === 'string') {
                 return;
             }
-            if (key === 'ficha' && typeof editFormData.value[key] === 'string') {
+            // Si el campo es 'ficha' y está vacío, no lo agregamos
+            if (key === 'ficha' && (!editFormData.value[key] || editFormData.value[key] === '')) {
                 return;
             }
             formData.append(key, editFormData.value[key]);
@@ -623,23 +596,7 @@ const toggleDestacado = (id, isChecked) => {
                                                 class="w-full h-40 object-contain border border-main-color rounded-md bg-gray-200 p-2">
                                         </div>
                                     </template>
-
-                                    <!-- Campo categoria_id con select de categorías -->
-                                    <template v-else-if="column === 'categoria_id'">
-                                        <label :for="`edit_${column}`" class="block font-medium text-gray-700 mb-1">
-                                            Categoria
-                                        </label>
-                                        <select :id="`edit_${column}`" v-model="editFormData[column]"
-                                            class="w-full border border-main-color px-4 py-2 rounded-md focus:ring-2 focus:ring-opacity-50 focus:ring-main-color focus:border-main-color"
-                                            required>
-                                            <option value="" disabled>Seleccione una categoría</option>
-                                            <option v-for="categoria in categorias" :key="categoria.id"
-                                                :value="categoria.id">
-                                                {{ categoria.titulo }}
-                                            </option>
-                                        </select>
-                                    </template>
-
+                                    
                                     <!-- Manejo de campo ficha -->
                                     <template v-else-if="column === 'ficha'">
                                         <label :for="`edit_${column}`"
@@ -673,6 +630,24 @@ const toggleDestacado = (id, isChecked) => {
                                             </div>
                                         </div>
                                     </template>
+
+                                    <!-- Campo categoria_id con select de categorías -->
+                                    <template v-else-if="column === 'categoria_id'">
+                                        <label :for="`edit_${column}`" class="block font-medium text-gray-700 mb-1">
+                                            Categoria
+                                        </label>
+                                        <select :id="`edit_${column}`" v-model="editFormData[column]"
+                                            class="w-full border border-main-color px-4 py-2 rounded-md focus:ring-2 focus:ring-opacity-50 focus:ring-main-color focus:border-main-color"
+                                            required>
+                                            <option value="" disabled>Seleccione una categoría</option>
+                                            <option v-for="categoria in categorias" :key="categoria.id"
+                                                :value="categoria.id">
+                                                {{ categoria.titulo }}
+                                            </option>
+                                        </select>
+                                    </template>
+
+                                    
 
                                     <!-- Campo role con select -->
                                     <template v-else-if="column === 'role'">
@@ -714,7 +689,7 @@ const toggleDestacado = (id, isChecked) => {
                                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
-                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943-9.543-7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268-2.943-9.543-7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                                                 </svg>
                                             </button>
                                         </div>

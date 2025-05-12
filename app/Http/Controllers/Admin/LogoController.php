@@ -35,6 +35,7 @@ class LogoController extends Controller
             if ($logo->path && Storage::disk('public')->exists($logo->path)) {
                 Storage::disk('public')->delete($logo->path);
             }
+
             $file = $request->file('path');
             $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
             $filePath = $file->storeAs('images', $fileName, 'public');

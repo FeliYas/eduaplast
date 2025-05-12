@@ -216,6 +216,10 @@
     border-color: #374977;
 }
 
+.border-second-color{
+    border-color: #CD2930;
+}
+
 .btn-primary {
   background-color: #374977;
   color: #fff;
@@ -268,7 +272,7 @@
   border: 1px solid #CD2930;
   cursor: pointer;
   text-align: center;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
@@ -281,6 +285,28 @@
   box-shadow: 0 0 10px rgba(55, 73, 119, 0.3);
   transform: scale(1.03);
 }
+.btn-home-2 {
+  background-color: #ffffff;
+  color: #CD2930;
+  padding: 0.5rem 1rem;
+  border-radius: calc(infinity * 1px);
+  border: 1px solid #CD2930;
+  cursor: pointer;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-home-2:hover {
+  background-color: #CD2930;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(55, 73, 119, 0.3);
+  transform: scale(1.03);
+}
+
 .line-width {
   width: 10%;
   transition: width 0.5s ease;
@@ -289,7 +315,13 @@
 .group:hover .line-width {
   width: 100%;
 }
-.titulo-home{
-    font-size: 40px;
-    font-weight: 700;
+.titulo-home {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .titulo-home {
+    font-size: 25px;
+  }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Categoria;
+use App\Models\Cliente;
 use App\Models\Contacto;
 use App\Models\Contenido;
 use App\Models\Logo;
@@ -21,7 +22,8 @@ class HomeController extends Controller
         $contenido = Contenido::first();
         $novedades = Novedade::orderBy('orden', 'asc')->take(3)->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
-        return view('front.home', compact('logos', 'sliders', 'categorias', 'contenido', 'novedades', 'contactos'));
+        $clientes = Cliente::orderBy('orden', 'asc')->get();
+        return view('front.home', compact('logos', 'sliders', 'categorias', 'contenido', 'novedades', 'contactos', 'clientes'));
 
     }
     

@@ -30,7 +30,7 @@
 </head>
 <body class="flex flex-col min-h-screen justify-between bg-white">
     <x-navbar-home :contactos="$contactos" :logos="$logos" />
-    <main class="{{ Route::currentRouteName() == 'home' ? 'overflow-hidden ' : 'mt-[55px] lg:[125px] xl:mt-[99px] '}}">
+    <main class="mt-[123px]">
         @yield('content')
     </main>
     <x-footer-home :contactos="$contactos" :logos="$logos"/>

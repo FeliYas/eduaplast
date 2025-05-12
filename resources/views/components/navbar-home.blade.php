@@ -1,8 +1,8 @@
 @props(['logos', 'contactos'])
-<nav class="w-full z-50 fixed top-0 left-0" x-data="navbarData">
+<nav class="w-full z-50" x-data="navbarData">
     <!-- Versión móvil: Logo y menú hamburguesa -->
     <div class="bg-main-color lg:hidden">
-        <div class="flex justify-between items-center h-[70px] max-w-[80%] mx-auto">
+        <div class="flex justify-between items-center h-[70px] max-w-[70%] mx-auto">
             <div>
                 <a href="{{ route('home') }}">
                     <img src="{{ asset('storage/' . (Route::currentRouteName() == 'home' ? $logos[0]->path : $logos[1]->path)) }}"
@@ -18,11 +18,14 @@
     </div>
     <div class="lg:hidden bg-white shadow-lg overflow-hidden transition-all duration-300 absolute w-full z-40"
         :class="mobileMenuOpen ? 'max-h-screen' : 'max-h-0'" x-cloak>
-        <div class="flex flex-col px-4 py-2">
-            {{-- <a href="{{ route('nosotros') }}" class="py-2 border-b border-gray-200">NOSOTROS</a>
-            <a href="{{ route('categorias') }}" class="py-2 border-b border-gray-200">PRODUCTOS</a>
-            <a href="{{ route('novedades') }}" class="py-2 border-b border-gray-200">NOVEDADES</a>
-            <a href="{{ route('contacto') }}" class="py-2 border-b border-gray-200">CONTACTO</a> --}}
+        <div class="flex flex-col px-4 py-2 ">
+            <a href="{{ route('nosotros') }}" class="py-2 border-b border-gray-200">Nosotros</a>
+            <a href="{{ route('categorias') }}" class="py-2 border-b border-gray-200">Productos</a>
+            <a href="{{ route('sectores') }}" class="py-2 border-b border-gray-200">Sectores</a>
+            <a href="{{ route('matriceria') }}" class="py-2 border-b border-gray-200">Matriceria propia</a>
+            <a href="{{ route('clientes') }}" class="py-2 border-b border-gray-200">Clientes</a>
+            <a href="{{ route('novedades') }}" class="py-2 border-b border-gray-200">Novedades</a>
+            <a href="{{ route('contacto') }}" class="py-2 border-b border-gray-200">Contacto</a>
             <div class="flex items-center py-2">
                 <i class="fa-solid fa-envelope mr-2 text-gray-600"></i>
                 @foreach ($contactos as $contacto)
@@ -35,74 +38,43 @@
             </div>
         </div>
     </div>
-    @if (Route::currentRouteName() == 'home')
-        <div class="hidden lg:block transition-colors duration-300 ease-in-out py-4 "
-            :class="scrolled ? 'bg-white border-b border-gray-200' : 'bg-transparent'"
-            @scroll.window="scrolled = (window.pageYOffset > 50)">
-            <div class="max-w-[80%] mx-auto flex justify-between items-center">
-                <div>
-                    <a href="{{ route('home') }}">
-                        <img :src="scrolled ? '{{ asset('storage/' . $logos[1]->path) }}' :
-                            '{{ asset('storage/' . $logos[0]->path) }}'"
-                            alt="logo">
-                    </a>
-                </div>
-                <div class="flex lg:gap-3 2xl:gap-6 lg:text-[14px] 2xl:text-[15px] text-center items-center">
-                    {{-- <a href="{{ route('nosotros') }}" class="hover:underline"
-                        :class="scrolled ? 'text-black' : 'text-white'">NOSOTROS</a>
-                    <a href="{{ route('categorias') }}" class="hover:underline"
-                        :class="scrolled ? 'text-black' : 'text-white'">PRODUCTOS</a>
-                    <a href="{{ route('novedades') }}" class="hover:underline"
-                        :class="scrolled ? 'text-black' : 'text-white'">NOVEDADES</a>
-                    <a href="{{ route('contacto') }}" class="hover:underline"
-                        :class="scrolled ? 'text-black' : 'text-white'">CONTACTO</a> --}}
-                </div>
+    <div class="hidden lg:block py-4 bg-white border-b border-gray-200 fixed w-full h-[123px] ">
+        <div class="max-w-[70%] mx-auto flex justify-between items-center relative">
+            <div>
+                <a href="{{ route('home') }}">
+                    <img src="{{ asset('storage/' . $logos[0]->path) }}" alt="logo">
+                </a>
+            </div>
+            <div class="flex lg:gap-3 2xl:gap-5 lg:text-[13px] 2xl:text-base relative items-center text-black">
+                @php $currentRoute = Route::currentRouteName(); @endphp
+                <a href="{{ route('nosotros') }}" class="{{ $currentRoute == 'nosotros' ? 'font-bold' : '' }}">
+                    Nosotros
+                </a>
+                <a href="{{ route('categorias') }}"
+                    class="relative {{ in_array($currentRoute, ['categorias', 'productos', 'producto']) ? 'font-bold' : '' }}">
+                    Productos
+                </a>
+                <a href="{{ route('sectores') }}" class="{{ $currentRoute == 'sectores' ? 'font-bold' : '' }}">
+                    Sectores
+                </a>
+                <a href="{{ route('matriceria') }}" class="{{ $currentRoute == 'matriceria' ? 'font-bold' : '' }}">
+                    Matriceria propia
+                </a>
+                <a href="{{ route('clientes') }}" class="{{ $currentRoute == 'clientes' ? 'font-bold' : '' }}">
+                    Clientes
+                </a>
+                <a href="{{ route('novedades') }}"
+                    class="{{ in_array($currentRoute, ['novedades', 'novedad']) ? 'font-bold' : '' }}">
+                    Novedades
+                </a>
+                <a href="{{ route('contacto') }}"
+                    class="relative {{ $currentRoute == 'contacto' ? 'font-bold' : '' }}">
+                    Contacto
+                </a>
+                <a href="{{route('presupuesto')}}" class="btn-home-2 w-[226px]">Solicitud de presupuesto</a>
             </div>
         </div>
-    @else
-        <div class="hidden lg:block py-4 bg-white border-b border-gray-200">
-            <div class="max-w-[80%] mx-auto flex justify-between items-center relative">
-                <div>
-                    <a href="{{ route('home') }}">
-                        <img src="{{ asset('storage/' . $logos[0]->path) }}" alt="logo">
-                    </a>
-                </div>
-                <div class="flex lg:gap-2 2xl:gap-4 lg:text-[13px] 2xl:text-base relative items-center">
-                    @php $currentRoute = Route::currentRouteName(); @endphp
-                    {{-- <a href="{{ route('nosotros') }}"
-                        class="relative {{ $currentRoute == 'nosotros' ? 'text-bold' : '' }}">
-                        NOSOTROS
-                        @if ($currentRoute == 'nosotros')
-                            <span class="absolute left-0 -bottom-10 2xl:-bottom-9.5 w-full h-1 bg-main-color"></span>
-                        @endif
-                    </a>
-                    <a href="{{ route('categorias') }}"
-                        class="relative {{ $currentRoute == 'categorias' ? 'text-bold' : '' }}">
-                        PRODUCTOS
-                        @if ($currentRoute == 'categorias' || $currentRoute == 'productos' || $currentRoute == 'producto')
-                            <span class="absolute left-0 -bottom-10 2xl:-bottom-9.5 w-full h-1 bg-main-color"></span>
-                        @endif
-                    </a>
-                    <a href="{{ route('novedades') }}"
-                        class="relative {{ $currentRoute == 'novedades' ? 'text-bold' : '' }}">
-                        NOVEDADES
-                        @if ($currentRoute == 'novedades' || $currentRoute == 'novedad')
-                            <span class="absolute left-0 -bottom-10 2xl:-bottom-9.5 w-full h-1 bg-main-color"></span>
-                        @endif
-                    </a>
-                    <a href="{{ route('contacto') }}"
-                        class="relative {{ $currentRoute == 'contacto' ? 'text-bold' : '' }}">
-                        CONTACTO
-                        @if ($currentRoute == 'contacto')
-                            <span class="absolute left-0 -bottom-10 2xl:-bottom-9.5 w-full h-1 bg-main-color"></span>
-                        @endif
-                    </a> --}}
-                </div>
-            </div>
-
-
-        </div>
-    @endif
+    </div>
 </nav>
 <script>
     document.addEventListener('alpine:init', () => {

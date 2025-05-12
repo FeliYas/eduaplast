@@ -24,10 +24,10 @@
                         </div>
 
                         <div class="absolute bg-black opacity-30 z-50"></div>
-                        <div class="absolute inset-0 flex z-20 max-w-[80%] mx-auto">
+                        <div class="absolute inset-0 flex z-20 max-w-[70%] mx-auto">
                             <div class="flex flex-col gap-6 lg:gap-19 w-full justify-center">
                                 <div class="text-white ">
-                                    <div class="flex flex-col gap-4 max-w-[600px]">
+                                    <div class="flex flex-col gap-4 max-w-[720px]">
                                         <h1 class="text-2xl lg:text-[52px] leading-13 font-semibold">
                                             {{ $slider->titulo }}
                                         </h1>
@@ -39,22 +39,22 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <a href="" class="btn-home-1">Mas información</a>
-                                </div>
-                                <div class="absolute bottom-20 w-full flex z-30">
-                                    <div class="flex space-x-1 lg:space-x-2">
-                                        @foreach ($sliders as $index => $slider)
-                                            <button
-                                                class="cursor-pointer dot w-6 lg:w-12 h-1.5 rounded-none transition-colors duration-300 bg-white {{ $index === 0 ? 'opacity-90' : 'opacity-50' }}"
-                                                onclick="goToSlide({{ $index }})">
-                                            </button>
-                                        @endforeach
-                                    </div>
+                                    <a href="{{route('categorias')}}" class="btn-home-1 w-50">Mas información</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @endforeach
+            </div>
+            <div class="absolute bottom-20 w-full flex z-30 left-[15%]">
+                <div class="flex space-x-1 lg:space-x-2">
+                    @foreach ($sliders as $index => $slider)
+                        <button
+                            class="cursor-pointer dot w-6 lg:w-12 h-1.5 rounded-none transition-colors duration-300 bg-white {{ $index === 0 ? 'opacity-90' : 'opacity-50' }}"
+                            onclick="goToSlide({{ $index }})">
+                        </button>
+                    @endforeach
+                </div>
             </div>
         </div>
 
@@ -165,32 +165,176 @@
                 initSlider();
             });
         </script>
-        <div class="max-w-[80%] mx-auto py-25">
+        <div class="max-w-[70%] mx-auto py-25">
             <div class="flex flex-col gap-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="titulo-home">Productos</h2>
-                    <a href="" class="btn-secondary-home ">VER TODOS</a>
+                    <h2 class="titulo-home text-black">Productos</h2>
+                    <a href="{{route('categorias')}}" class="btn-home-2 w-[120px]">VER TODOS</a>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 w-full gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-4 w-full gap-6">
                     @foreach ($categorias as $categoria)
                         <div
-                            class="w-full h-[392px] relative transform hover:scale-[1.02] transition-transform duration-300">
-                            <a href=""
-                                class="block group h-full w-full overflow-hidden relative rounded-md shadow-md hover:shadow-xl transition-shadow duration-300">
+                            class="w-full h-[288px] group shadow-md hover:shadow-xl transition-shadow duration-300 rounded-xl overflow-hidden border border-gray-200">
+                            <a href="" class="block w-full h-full">
+                                {{-- {{ route('productos', ['id' => $categoria->id]) }} --}}
                                 <img src="{{ asset('storage/' . $categoria->path) }}" alt="{{ $categoria->titulo }}"
-                                    class="w-full h-full object-cover transition duration-300 ease-in-out">
+                                    class="object-cover w-full h-[230px] transform group-hover:scale-105 transition-transform duration-500">
                                 <p
-                                    class="absolute bottom-0 left-0 right-0 text-[26px] font-medium text-center py-5 text-black drop-shadow-md group-hover:translate-y-1 transition duration-300 bg-white">
+                                    class="text-black text-xl lg:text-[22px] text-center py-3 opacity-90 group-hover:opacity-100 transition-opacity duration-300">
                                     {{ strtoupper($categoria->titulo) }}
                                 </p>
                             </a>
                         </div>
                     @endforeach
                 </div>
-
             </div>
+        </div>
+        <div class="flex flex-col lg:flex-row bg-main-color gap-6 lg:gap-18">
+            <img src="{{ asset('storage/' . $contenido->path) }}" alt="Contenido de la pagina"
+                class="lg:w-1/2 h-[500px] lg:h-[600px] object-cover opacity-0 -translate-x-20 transition-all duration-2000 ease-in-out scroll-fade-left">
+            <div
+                class="lg:w-1/2 pr-[5%] pl-[5%] lg:pl-[0%] lg:pr-[15%] lg:mt-20 flex flex-col gap-2 lg:gap-10 opacity-0 translate-x-20 transition-all duration-2000 ease-in-out scroll-fade-right items-center lg:items-start">
+                <h2 class="titulo-home mb-1.5">{{ $contenido->titulo }}</h2>
+                <div class="custom-summernote lg:text-xl text-center lg:text-left">
+                    <p>{!! $contenido->descripcion !!}</p>
+                </div>
+                <a href="{{route('nosotros')}}" class="btn-home-2 mb-4 mt-0 lg:mb-0 lg:mt-10">Mas información</a>
+            </div>
+        </div>
+        <div class="max-w-[70%] mx-auto py-20 mb-4.5">
+            <div class="flex flex-col gap-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="titulo-home text-black">Novedades</h2>
+                    <a href="{{route('novedades')}}" class="btn-home-2 w-[120px]">VER TODAS</a>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 w-full gap-6">
+                    @foreach ($novedades as $novedad)
+                        <div class="transform hover:scale-[1.02] transition duration-300 hover:shadow-xl">
+                            <x-tarjeta-novedades :novedad="$novedad" />
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-100 py-16 pb-20">
+            <div class="flex flex-col gap-6 max-w-[70%] mx-auto">
+                <div class="flex justify-between items-center">
+                    <h2 class="titulo-home text-black">Clientes</h2>
+                    <a href="{{route('clientes')}}" class="btn-home-2 w-[120px]">Ver
+                        todos</a>
+                </div>
+                <div class="relative" x-data="{
+                    activeSlide: 0,
+                    totalSlides: window.innerWidth >= 1024 ? Math.ceil({{ count($clientes) }} / 6) : {{ count($clientes) }},
+                    autoSlideInterval: null,
+                    isMobile: window.innerWidth < 1024,
+                
+                    init() {
+                        this.startAutoSlide();
+                
+                        // Actualizar cuando cambie el tamaño de la ventana
+                        window.addEventListener('resize', () => {
+                            this.isMobile = window.innerWidth < 1024;
+                            this.totalSlides = this.isMobile ? {{ count($clientes) }} : Math.ceil({{ count($clientes) }} / 6);
+                            this.activeSlide = 0; // Reiniciar a la primera diapositiva al cambiar de tamaño
+                        });
+                    },
+                
+                    startAutoSlide() {
+                        this.autoSlideInterval = setInterval(() => {
+                            this.nextSlide();
+                        }, this.isMobile ? 3000 : 5000); // 3 segundos en móvil, 5 en escritorio
+                    },
+                
+                    stopAutoSlide() {
+                        clearInterval(this.autoSlideInterval);
+                    },
+                
+                    nextSlide() {
+                        this.activeSlide = (this.activeSlide + 1) % this.totalSlides;
+                    },
+                
+                    prevSlide() {
+                        this.activeSlide = (this.activeSlide - 1 + this.totalSlides) % this.totalSlides;
+                    },
+                
+                    goToSlide(index) {
+                        this.activeSlide = index;
+                    }
+                }" @mouseover="stopAutoSlide()" @mouseleave="startAutoSlide()">
 
+                    <!-- Carrusel de clientes -->
+                    <div class="overflow-hidden relative">
+                        <!-- Versión para escritorio (oculta en móvil) -->
+                        <div class="hidden lg:flex transition-transform duration-500 ease-in-out"
+                            :style="`transform: translateX(-${activeSlide * 100}%)`">
+
+                            @php
+                                $chunkedClientes = $clientes->chunk(6);
+                            @endphp
+
+                            @foreach ($chunkedClientes as $chunk)
+                                <div class="grid grid-cols-6 justify-between gap-6 min-w-full py-4">
+                                    @foreach ($chunk as $cliente)
+                                        <div class="h-[190px] max-w-[300px] bg-white p-4 rounded-xl shadow-md">
+                                            <img src="{{ asset('storage/' . $cliente->path) }}" alt="cliente"
+                                                class="w-full h-full object-contain transition-all duration-300 filter grayscale hover:grayscale-0">
+                                        </div>
+                                    @endforeach
+
+                                    <!-- Agrega divs vacíos para mantener la estructura si hay menos de 6 items en el chunk -->
+                                    @for ($i = count($chunk); $i < 6; $i++)
+                                        <div class="h-[190px] max-w-[300px] "></div>
+                                    @endfor
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Versión para móvil (oculta en escritorio) -->
+                        <div class="lg:hidden flex transition-transform duration-500 ease-in-out"
+                            :style="`transform: translateX(-${activeSlide * 100}%)`">
+
+                            @foreach ($clientes as $cliente)
+                                <div class="min-w-full flex justify-center">
+                                    <div class="max-h-[190px] max-w-[300px] w-full bg-white">
+                                        <img src="{{ asset('storage/' . $cliente->path) }}" alt="cliente"
+                                            class="w-full h-full object-cover transition-all duration-300 filter lg:grayscale hover:grayscale-0">
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Indicadores de paginación con forma de barras -->
+                    <template x-if="totalSlides > 1">
+                        <div class="absolute -bottom-10 left-0 right-0 flex justify-center space-x-2 mt-6">
+                            <template x-for="(slide, index) in totalSlides" :key="index">
+                                <button @click="goToSlide(index)"
+                                    :class="{ 'bg-gray-400': activeSlide === index, 'bg-gray-200': activeSlide !== index }"
+                                    class="w-10 h-1.5 cursor-pointer transition-colors duration-300"></button>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.remove('opacity-0', '-translate-x-20',
+                            'translate-x-20');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
 
+            document.querySelectorAll('.scroll-fade-left, .scroll-fade-right').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
 @endsection

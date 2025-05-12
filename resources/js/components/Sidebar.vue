@@ -154,18 +154,6 @@
             </Link>
           </li>
           <li>
-            <Link href="/admin/newsletter"
-              class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group relative overflow-hidden cursor-pointer">
-            <div
-              class="absolute left-0 top-0 h-full w-0 bg-white/10 transition-all duration-300 group-hover:w-full rounded-lg">
-            </div>
-            <i class="fa-solid fa-envelopes-bulk text-center w-5 text-white relative z-10"></i>
-            <span
-              class="whitespace-nowrap group-hover:translate-x-1 transition-transform duration-200 relative z-10">Newsletter</span>
-            <span class="relative z-10"></span>
-            </Link>
-          </li>
-          <li>
             <Link href="/admin/usuarios"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group relative overflow-hidden cursor-pointer">
             <div

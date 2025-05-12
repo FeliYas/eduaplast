@@ -8,7 +8,7 @@ const columns = ['orden', 'titulo', 'descripcion', 'categoria_id', 'ficha', 'ima
 // Definición de rutas
 const createRoute = '/admin/productos/productos/store';
 const updateRoute = '/admin/productos/productos/update/__ID__';
-const deleteRoute = '/admin/productos/productos/destroy/__ID__';
+const deleteRoute = '/admin/productos/productos/delete/__ID__';
 const imgsRoute = '/admin/productos/productos/imagenes';
 
 const props = defineProps({

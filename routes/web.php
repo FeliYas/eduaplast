@@ -16,12 +16,34 @@ use App\Http\Controllers\Admin\ProductoImgController;
 use App\Http\Controllers\Admin\SectoreController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Front\ClientesaController;
+use App\Http\Controllers\Front\ContactoController as FrontContactoController;
 use App\Http\Controllers\Front\HomeController;
+use App\Http\Controllers\Front\MatriceriaController as FrontMatriceriaController;
+use App\Http\Controllers\Front\NosotrosController;
+use App\Http\Controllers\Front\NovedadesController;
+use App\Http\Controllers\Front\PresupuestoController;
+use App\Http\Controllers\Front\ProductosController;
+use App\Http\Controllers\Front\SectoresController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
-Route::get('/', [HomeController::class, 'index'])->name('home');   
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/nosotros', [NosotrosController::class, 'index'])->name('nosotros');
+Route::get('/productos', [ProductosController::class, 'index'])->name('categorias');
+Route::get('/productos/{id}', [ProductosController::class, 'productos'])->name('productos');
+Route::get('/productos/{id}/{producto}', [ProductosController::class, 'producto'])->name('producto');
+Route::get('/sectores', [SectoresController::class, 'index'])->name('sectores');
+Route::get('/matriceria-propia', [FrontMatriceriaController::class, 'index'])->name('matriceria');
+Route::get('/clientes', [ClientesaController::class, 'index'])->name('clientes');
+Route::get('/novedades', [NovedadesController::class, 'index'])->name('novedades');
+Route::get('/novedades/{id}', [NovedadesController::class, 'show'])->name('novedad');
+Route::get('/contacto', [FrontContactoController::class, 'index'])->name('contacto');
+Route::get('/presupuesto', [PresupuestoController::class, 'index'])->name('presupuesto');
+Route::post('/presupuesto/agregar', [PresupuestoController::class, 'store'])->name('presupuesto.store');
+Route::post('/presupuesto/enviar', [PresupuestoController::class, 'enviar'])->name('presupuesto.enviar');
+Route::delete('/presupuesto/eliminar/{id}', [PresupuestoController::class, 'delete'])->name('presupuesto.delete');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/adm', function () {
@@ -32,7 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 Route::middleware(['auth', 'verified'])->group(function () {
     //rutas de los sliders del dashboard
-    Route::get('/admin/home/slider', [SliderController::class, 'index'])->name('admin.slider');    
+    Route::get('/admin/home/slider', [SliderController::class, 'index'])->name('admin.slider');
     Route::post('/admin/home/slider/store', [SliderController::class, 'store'])->name('slider.store');
     Route::put('/admin/home/slider/update/{id}', [SliderController::class, 'update'])->name('slider.update');
     Route::delete('/admin/home/slider/delete/{id}', [SliderController::class, 'destroy'])->name('slider.destroy');
@@ -106,7 +128,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //rutas de los metadatos
     Route::get('/admin/metadatos', [MetadatoController::class, 'index'])->name('metadatos.dashboard');
     Route::put('/admin/metadatos/update/{id}', [MetadatoController::class, 'update'])->name('metadatos.update');
-
 });
 
 require __DIR__ . '/settings.php';
