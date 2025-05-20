@@ -8,6 +8,7 @@ use App\Models\Contacto;
 use App\Models\Logo;
 use App\Models\Producto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -60,10 +61,6 @@ class PresupuestoController extends Controller
 
     public function enviar(Request $request)
     {
-        if ($request->input('carrito_vacio') == 1) {
-            return redirect()->back()->with('error', 'No hay productos seleccionados en el carrito. Seleccioná productos para enviar la consulta.');
-        }
-
         try {
             $validated = $request->validate([
                 'nombre' => 'required|string|max:255',
@@ -72,12 +69,28 @@ class PresupuestoController extends Controller
                 'empresa' => 'nullable|string|max:255',
                 'mensaje' => 'required|string',
                 'archivo' => 'nullable|file|max:2048|mimes:pdf,xlsx,xls,csv,png,jpg,jpeg',
+                'g-recaptcha-response' => 'required'
             ], [
                 'required' => 'El campo :attribute es obligatorio',
                 'email' => 'El campo debe ser un email válido',
                 'file' => 'El archivo debe ser válido',
             ]);
 
+            // Verificar el token de reCAPTCHA
+            $recaptcha = $this->verificarRecaptcha($request->input('g-recaptcha-response'));
+
+            if (!$recaptcha['success']) {
+                return redirect()->back()
+                    ->withErrors(['recaptcha' => 'La verificación de seguridad ha fallado. Por favor, inténtalo de nuevo.'])
+                    ->withInput();
+            }
+
+            // Si el score es muy bajo (posible bot), puedes rechazar la solicitud
+            if ($recaptcha['score'] < 0.7) {
+                return redirect()->back()
+                    ->withErrors(['recaptcha' => 'La verificación de seguridad ha detectado actividad sospechosa. Por favor, inténtalo de nuevo más tarde.'])
+                    ->withInput();
+            }
             $carrito = session('carrito_consulta', []);
 
             $mailData = [
@@ -93,8 +106,14 @@ class PresupuestoController extends Controller
             if ($request->hasFile('archivo')) {
                 $archivoPath = $request->file('archivo')->store('presupuestos', 'public');
             }
-            
-            Mail::to(config('mail.from.address'))->send(new PresupuestoMail($mailData, $carrito, $archivoPath));
+
+            $contacto = Contacto::first()->email;
+
+            if (!$contacto) {
+                return redirect()->back()->with('error', 'No se encontró un contacto con el tipo "email".');
+            }
+
+            Mail::to($contacto)->send(new PresupuestoMail($mailData, $carrito, $archivoPath));
 
             session()->forget('carrito_consulta');
 
@@ -104,5 +123,15 @@ class PresupuestoController extends Controller
 
             return redirect()->back()->with('error', 'Hubo un problema al enviar tu consulta. Por favor, intenta nuevamente más tarde.');
         }
+    }
+    private function verificarRecaptcha($token)
+    {
+        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => env('RECAPTCHA_SECRET_KEY'),
+            'response' => $token,
+            'remoteip' => request()->ip()
+        ]);
+
+        return $response->json();
     }
 }

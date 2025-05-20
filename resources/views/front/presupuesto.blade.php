@@ -187,7 +187,9 @@
                             </div>
                             <div class="mt-auto flex flex-col lg:flex-row gap-4 items-center justify-between py-4 lg:py-0">
                                 <p class="text-black">*Campos obligatorios</p>
-                                <button type="submit" class="btn-home-1 lg:w-3/5">Enviar solicitud de
+                                <!-- Agregamos campo oculto para almacenar el token de reCAPTCHA -->
+                                <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
+                                <button type="button" id="submitBtn" class="btn-home-1 lg:w-3/5">Enviar solicitud de
                                     presupuesto</button>
                             </div>
                         </div>
@@ -196,9 +198,35 @@
             </div>
         </div>
     </div>
+    <!-- Script de reCAPTCHA v3 -->
+    <script
+        src="https://www.google.com/recaptcha/api.js?render=6LecbjgrAAAAAMajoV7MVpTz6X2K36u5LWrTVswa
+                                                                                                                                                                                                                                                                                                            ">
+    </script>
     <script>
         // Script para sincronizar cantidades de productos
         document.addEventListener('DOMContentLoaded', function() {
+            // Agregar evento al botón de envío
+            document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+
+            function handleSubmit(e) {
+                e.preventDefault();
+
+                // Activar reCAPTCHA
+                grecaptcha.ready(function() {
+                    grecaptcha.execute('6LecbjgrAAAAAMajoV7MVpTz6X2K36u5LWrTVswa', {
+                        action: 'submit_presupuesto'
+                    }).then(function(token) {
+                        // Guardar el token en el campo oculto
+                        document.getElementById('recaptchaResponse').value = token;
+
+                        // Enviar el formulario
+                        document.querySelector('form[action="{{ route('presupuesto.enviar') }}"]')
+                            .submit();
+                    });
+                });
+            }
+
             // Actualizar campos ocultos cuando cambian las cantidades
             const cantidadInputs = document.querySelectorAll('.cantidad-producto');
 

@@ -7,7 +7,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class PresupuestoMail extends Mailable
 {
@@ -22,9 +24,12 @@ class PresupuestoMail extends Mailable
      */
     public function __construct($datos, $carrito, $archivoPath = null)
     {
-        $this->datos = $datos;
-        $this->carrito = $carrito;
-        $this->archivoPath = $archivoPath;
+        $this->datos = $datos ?? [];
+        $this->carrito = $carrito ?? [];
+        $this->archivoPath = $archivoPath ?? null;
+
+        // Log para depurar los datos recibidos
+        Log::info('Datos recibidos en PresupuestoMail:', $this->datos);
     }
 
     /**
@@ -33,7 +38,9 @@ class PresupuestoMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Presupuesto Mail',
+            subject: 'Nuevo mensaje de presupuesto',
+            from: new Address('no-reply@eduaplast.com', ($this->datos['nombre'] ?? '')),
+
         );
     }
 
