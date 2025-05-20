@@ -17,6 +17,7 @@ class MatriceriaController extends Controller
         $metadatos = Metadato::where('seccion', 'matriceria')->first();
         $logos = Logo::whereIn('seccion', ['navbar', 'footer'])->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
-        return view('front.matriceria', compact('matriceria', 'metadatos', 'logos', 'contactos'));
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
+        return view('front.matriceria', compact('matriceria', 'metadatos', 'logos', 'contactos', 'whatsapp'));
     }
 }

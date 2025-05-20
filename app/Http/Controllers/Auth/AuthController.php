@@ -33,7 +33,7 @@ class AuthController extends Controller
 
         // Intenta autenticar verificando si login es un email o un nombre de usuario
         $loginType = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        
+
         $attemptData = [
             $loginType => $request->login,
             'password' => $request->password,
@@ -41,8 +41,17 @@ class AuthController extends Controller
 
         if (Auth::attempt($attemptData, $request->remember)) {
             $request->session()->regenerate();
-            
-            return redirect()->intended('/admin');
+
+            // Obtener la URL intencionada
+            $intendedUrl = session()->pull('url.intended', '/adm');
+
+            // Comprobar si la URL intencionada es la página de login
+            if ($intendedUrl === url('/login') || $intendedUrl === '/login') {
+                return redirect('/adm');
+            }
+
+            // Redirigir a la URL intencionada
+            return redirect($intendedUrl);
         }
 
         return back()->withErrors([

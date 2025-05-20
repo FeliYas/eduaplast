@@ -19,7 +19,6 @@ class NovedadeController extends Controller
             'novedades' => $novedades,
             'logo' => $logo
         ]);
-
     }
     public function store(Request $request)
     {
@@ -33,7 +32,7 @@ class NovedadeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
 
         $imageName = null;
@@ -51,12 +50,12 @@ class NovedadeController extends Controller
             'path'               => $imageName,
         ]);
 
-        // Redirigir con mensaje de éxito
-        return $this->success_response('Novedad creada exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('novedades.dashboard')->with('message', 'Novedad creada exitosamente');
     }
     public function update(Request $request, $id)
     {
-        
+
         // Validar los campos del formulario
         $validator = Validator::make($request->all(), [
             'orden'                => 'nullable|string|max:255',
@@ -66,33 +65,34 @@ class NovedadeController extends Controller
             'path'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
 
         // Obtener el registro de Novedades
         $novedades = Novedade::findOrFail($id);
 
-        // Manejar la actualización de la imagen principal (input "path")
         if ($request->hasFile('path')) {
             if ($novedades->path && Storage::disk('public')->exists($novedades->path)) {
                 Storage::disk('public')->delete($novedades->path);
             }
+            // Generar un nombre único para la nueva imagen
+            $imageName = uniqid() . '.' . $request->file('path')->getClientOriginalExtension();
 
-            $file = $request->file('path');
-            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('images', $fileName, 'public');
-        } else {
-            $filePath = $novedades->path; // Mantener la imagen anterior si no se sube una nueva
+            // Mover la imagen a la carpeta public/storage/images y obtener el nombre relativo
+            $filePath = $request->file('path')->storeAs('images', $imageName, 'public');
+
+            // Actualizar la ruta de la imagen
+            $novedades->path = 'images/' . $imageName; // Guardamos la ruta relativa de la imagen
         }
         $novedades->orden              = $request->orden;
         $novedades->epigrafe           = $request->epigrafe;
         $novedades->titulo             = $request->titulo;
         $novedades->descripcion        = $request->descripcion;
-        $novedades->path               = $filePath;
         // Guardar los cambios en Novedades
         $novedades->save();
 
-        return $this->success_response('Novedad actualizada exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('novedades.dashboard')->with('message', 'Novedad actualizada exitosamente');
     }
 
     public function destroy($id)
@@ -108,7 +108,7 @@ class NovedadeController extends Controller
         // Eliminar el registro de la base de datos
         $novedades->delete();
 
-        // Redirect or return response
-        return $this->success_response('Novedad eliminada exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('novedades.dashboard')->with('message', 'Novedad eliminada exitosamente');
     }
 }

@@ -10,4 +10,9 @@ class Logo extends Model
         'seccion',
         'path',
     ];
+
+    public function getPathAttribute($value)
+    {
+        return asset('storage/' . $value);
+    }
 }

@@ -28,7 +28,7 @@ class CategoriaController extends Controller
             'path' => 'mimes:jpeg,png,jpg,gif,svg,mp4,avi,mov|max:2048'
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $imageName = null;
         if ($request->hasFile('path')) {
@@ -43,7 +43,8 @@ class CategoriaController extends Controller
             'path'               => $imageName,
         ]);
 
-        return $this->success_response('Categoria creada exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('categorias.dashboard')->with('message', 'Categoria creada exitosamente');
     }
     public function update(Request $request, $id)
     {
@@ -53,7 +54,7 @@ class CategoriaController extends Controller
             'path' => 'nullable|mimes:jpeg,png,jpg,gif,svg,mp4,avi,mov|max:2048'
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $categoria = Categoria::findOrFail($id);
 
@@ -75,8 +76,8 @@ class CategoriaController extends Controller
         }
         $categoria->save();
 
-        // Redirigir con un mensaje de éxito
-        return $this->success_response('Categoria actualizada exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('categorias.dashboard')->with('message', 'Categoria actualizada exitosamente');
     }
     public function destroy($id)
     {
@@ -91,8 +92,8 @@ class CategoriaController extends Controller
         // Eliminar el registro de la base de datos
         $categoria->delete();
 
-        // Redirect or return response
-        return $this->success_response('Categoria eliminada exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('categorias.dashboard')->with('message', 'Categoria eliminada exitosamente');
     }
     public function toggleDestacado(Request $request)
     {

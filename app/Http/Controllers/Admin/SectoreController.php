@@ -19,7 +19,6 @@ class SectoreController extends Controller
             'sectores' => $sectores,
             'logo' => $logo
         ]);
-
     }
     public function store(Request $request)
     {
@@ -31,7 +30,7 @@ class SectoreController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
 
         $imageName = null;
@@ -47,12 +46,12 @@ class SectoreController extends Controller
             'path'               => $imageName,
         ]);
 
-        // Redirigir con mensaje de éxito
-        return $this->success_response('Sector creado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('sectores.dashboard')->with('message', 'Sector creado exitosamente');
     }
     public function update(Request $request, $id)
     {
-        
+
         // Validar los campos del formulario
         $validator = Validator::make($request->all(), [
             'orden'                => 'nullable|string|max:255',
@@ -60,31 +59,32 @@ class SectoreController extends Controller
             'path'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
 
         // Obtener el registro de sector
         $sector = Sectore::findOrFail($id);
 
-        // Manejar la actualización de la imagen principal (input "path")
-        if ($request->hasFile('path')) {
+         if ($request->hasFile('path')) {
             if ($sector->path && Storage::disk('public')->exists($sector->path)) {
                 Storage::disk('public')->delete($sector->path);
             }
+            // Generar un nombre único para la nueva imagen
+            $imageName = uniqid() . '.' . $request->file('path')->getClientOriginalExtension();
 
-            $file = $request->file('path');
-            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('images', $fileName, 'public');
-        } else {
-            $filePath = $sector->path; // Mantener la imagen anterior si no se sube una nueva
+            // Mover la imagen a la carpeta public/storage/images y obtener el nombre relativo
+            $filePath = $request->file('path')->storeAs('images', $imageName, 'public');
+
+            // Actualizar la ruta de la imagen
+            $sector->path = 'images/' . $imageName; // Guardamos la ruta relativa de la imagen
         }
         $sector->orden              = $request->orden;
         $sector->titulo             = $request->titulo;
-        $sector->path               = $filePath;
         // Guardar los cambios en sector
         $sector->save();
 
-        return $this->success_response('Sector actualizado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('sectores.dashboard')->with('message', 'Sector actualizado exitosamente');
     }
 
     public function destroy($id)
@@ -100,7 +100,7 @@ class SectoreController extends Controller
         // Eliminar el registro de la base de datos
         $sector->delete();
 
-        // Redirect or return response
-        return $this->success_response('Sector eliminado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('sectores.dashboard')->with('message', 'Sector eliminado exitosamente');
     }
 }

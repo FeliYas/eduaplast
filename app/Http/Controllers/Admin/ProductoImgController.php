@@ -31,7 +31,7 @@ class ProductoImgController extends Controller
             'orden' => 'required|string|max:255',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $imageName = null;
         if ($request->hasFile('path')) {
@@ -44,7 +44,9 @@ class ProductoImgController extends Controller
             'path'               => $imageName,
             'producto_id'        => $request->producto_id,
         ]);
-        return $this->success_response('Imagen creadas exitosamente.');
+        
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('imagenes.dashboard', ['id' => $request->producto_id])->with('message', 'Imagen agregada exitosamente');
     }
     public function update(Request $request, $id)
     {
@@ -53,7 +55,7 @@ class ProductoImgController extends Controller
             'orden' => 'nullable|string|max:255',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $productoImg = ProductoImg::findOrFail($id);
         if ($request->hasFile('path')) {
@@ -69,7 +71,9 @@ class ProductoImgController extends Controller
         $productoImg->update(array_filter([
             'orden' => $request->orden,
         ]));
-        return $this->success_response('Imagen actualizada exitosamente.');
+        
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('imagenes.dashboard', ['id' => $productoImg->producto_id])->with('message', 'Imagen actualizada exitosamente');
     }
     public function destroy($id)
     {
@@ -78,6 +82,8 @@ class ProductoImgController extends Controller
             Storage::disk('public')->delete($productoImg->path);
         }
         $productoImg->delete();
-        return $this->success_response('Imagen eliminada exitosamente.');
+
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('imagenes.dashboard', ['id' => $productoImg->producto_id])->with('message', 'Imagen eliminada exitosamente');
     }
 }

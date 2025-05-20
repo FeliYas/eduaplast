@@ -23,12 +23,12 @@ class NosotroController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'path' => 'nullable|mimes:jpeg,png,jpg,gif,svg,mp4,avi,mov|max:100000', 
+            'path' => 'nullable|mimes:jpeg,png,jpg,gif,svg,mp4,avi,mov|max:100000',
             'titulo' => 'nullable|string|max:255',
             'descripcion' => 'nullable|string',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $nosotros = Nosotro::findOrFail($id);
 
@@ -50,7 +50,8 @@ class NosotroController extends Controller
         }
         $nosotros->save();
 
-        return $this->success_response('Contenido actualizado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('nosotros.dashboard')->with('message', 'Nosotros actualizado exitosamente');
     }
     public function updateCard(Request $request, $id, $num)
     {
@@ -59,7 +60,7 @@ class NosotroController extends Controller
             'descripcion' => 'required|string',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $nosotros = Nosotro::findOrFail($id);
 
@@ -72,6 +73,7 @@ class NosotroController extends Controller
 
         $nosotros->save();
 
-        return $this->success_response('Tarjeta actualizada exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('nosotros.dashboard')->with('message', 'Tarjeta de nosotros actualizada exitosamente');
     }
 }

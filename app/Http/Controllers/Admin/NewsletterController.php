@@ -26,21 +26,21 @@ class NewsletterController extends Controller
             'email' => 'required|email|unique:newsletters,email',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $newsletter = new Newsletter();
         $newsletter->email = $request->email;
         $newsletter->save();
 
-        
-        return $this->success_response('Email guardado exitosamente.');
+
+        return back()->with('Email guardado exitosamente.');
     }
     public function destroy($id)
     {
         $mail = Newsletter::findOrFail($id);
         $mail->delete();
 
-        
-        return $this->success_response('Email eliminado exitosamente.');
+
+        return back()->with('Email eliminado exitosamente.');
     }
 }

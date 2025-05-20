@@ -5,21 +5,35 @@
 @section('title', 'Contacto')
 
 @section('content')
-    <div class="max-w-[70%] mx-auto">
-        <div>
-            <div class="text-xs mt-10">
+    <div class="max-w-[80%] lg:max-w-[60%] mx-auto">
+        <div class="py-7">
+            <div class="text-xs">
                 <!-- Ruta de navegación -->
-                <div class="text-black hidden lg:block mt-8">
+                <div class="text-black hidden lg:block">
                     <a href="{{ route('home') }}" class="hover:underline">Inicio</a>
                     <span class="mx-[5px]">&gt;</span>
                     <a href="{{ route('contacto') }}" class="text-gray-500 hover:underline">Contacto</a>
-                    <span class="mx-[5px]"></span>
                 </div>
             </div>
         </div>
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div>
-            <div class="flex flex-col lg:flex-row justify-between gap-12 py-5 lg:py-20">
-                <div class="lg:w-1/4 flex flex-col gap-2 lg:gap-4 text-black">
+            <div class="flex flex-col lg:flex-row justify-between gap-12 lg:py-8">
+                <div class="lg:w-1/3 flex flex-col gap-2 lg:gap-4 text-black">
                     <div class="flex flex-col text-center lg:text-left gap-2 mb-3">
                         <p>Para mayor información, no dude en contactarse mediante el siguiente
                             formulario, o a través de
@@ -31,7 +45,7 @@
                                 class="block no-underline text-inherit hover:text-main-color">
                                 <p class="lg:text-sm 2xl:text-[15px] mt-4.5">
                                     <span class="flex items-center gap-2">
-                                        <svg width="30" height="30" viewBox="0 0 20 20" fill="none"
+                                        <svg width="35" height="35" viewBox="0 0 20 20" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="M16.6668 8.33341C16.6668 13.3334 10.0002 18.3334 10.0002 18.3334C10.0002 18.3334 3.3335 13.3334 3.3335 8.33341C3.3335 6.5653 4.03588 4.86961 5.28612 3.61937C6.53636 2.36913 8.23205 1.66675 10.0002 1.66675C11.7683 1.66675 13.464 2.36913 14.7142 3.61937C15.9644 4.86961 16.6668 6.5653 16.6668 8.33341Z"
@@ -93,17 +107,18 @@
                         @endif
                     @endforeach
                 </div>
-                <div class="lg:w-3/4">
-                    <form action="" method="POST" class="w-full space-y-6 text-black" id="contactForm">
+                <div class="lg:w-2/3">
+                    <form action="{{ route('contacto.enviar') }}" method="POST" class="w-full space-y-6 text-black"
+                        id="contactForm">
                         @csrf
                         <div class="grid lg:grid-cols-2 gap-6">
                             <div class="w-full">
-                                <label for="nombre" class="block mb-1">Nombre *</label>
+                                <label for="nombre" class="block mb-1">Nombre y apellido*</label>
                                 <input type="text" name="nombre" id="nombre"
                                     class="border border-gray-300 w-full h-12 px-4">
                             </div>
                             <div class="w-full">
-                                <label for="apellido" class="block mb-1">Apellido *</label>
+                                <label for="apellido" class="block mb-1">Email*</label>
                                 <input type="text" name="apellido" id="apellido"
                                     class="border border-gray-300 w-full h-12 px-4">
                             </div>
@@ -111,7 +126,7 @@
 
                         <div class="grid lg:grid-cols-2 gap-6">
                             <div class="w-full">
-                                <label for="telefono" class="block mb-1">Teléfono *</label>
+                                <label for="telefono" class="block mb-1">Teléfono*</label>
                                 <input type="text" name="telefono" id="telefono"
                                     class="border border-gray-300 w-full h-12 px-4">
                             </div>
@@ -121,11 +136,13 @@
                                     class="border border-gray-300 w-full h-12 px-4">
                             </div>
                         </div>
-                        <div class="flex gap-6">
+                        <div class="flex flex-col lg:flex-row gap-6">
                             <div class="w-full py-2">
-                                <label for="mensaje" class="block mb-1">Mensaje *</label>
-                                <textarea name="mensaje" id="mensaje" cols="30" rows="10" class="border border-gray-300 w-full px-4"></textarea>
+                                <label for="mensaje" class="block mb-1">Mensaje*</label>
+                                <textarea name="mensaje" id="mensaje" cols="30" rows="10"
+                                    class="border border-gray-300 w-full px-4 py-2"></textarea>
                             </div>
+
                             <div class="w-full flex items-end justify-center gap-10">
                                 <div class="mb-4 text-lg">
                                     <p>*campos obligatorios</p>
@@ -146,8 +163,8 @@
 
                     <!-- Script de reCAPTCHA v3 -->
                     <script
-                        src="https://www.google.com/recaptcha/api.js?render=6LfunycrAAAAAAUdd5QxBm7AeK_9ec2Phizdo6LA
-                                                                                                                                                    ">
+                        src="https://www.google.com/recaptcha/api.js?render=6LecbjgrAAAAAMajoV7MVpTz6X2K36u5LWrTVswa
+                                                                                                                                                                                                                                                                                                ">
                     </script>
 
                     <script>
@@ -160,7 +177,7 @@
 
                                 // Activar reCAPTCHA
                                 grecaptcha.ready(function() {
-                                    grecaptcha.execute('6LfunycrAAAAAAUdd5QxBm7AeK_9ec2Phizdo6LA', {
+                                    grecaptcha.execute('6LecbjgrAAAAAMajoV7MVpTz6X2K36u5LWrTVswa', {
                                         action: 'submit_contact'
                                     }).then(function(token) {
                                         // Guardar el token en el campo oculto

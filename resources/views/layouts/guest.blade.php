@@ -8,8 +8,8 @@
 
     @yield('meta')
     <title>Eduaplast - @yield('title')</title>
-    @vite('resources/css/app.css')
-    @vite('resources/js/app.js')
+    {{-- @vite('resources/css/app.css') --}}
+    @vite('resources/js/app.ts')
 
     <script src="https://kit.fontawesome.com/b68f733bf8.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -30,11 +30,11 @@
 </head>
 <body class="flex flex-col min-h-screen justify-between bg-white">
     <x-navbar-home :contactos="$contactos" :logos="$logos" />
-    <main class="mt-[123px]">
+    <main class="lg:mt-[123px] ">
         @yield('content')
     </main>
     <x-footer-home :contactos="$contactos" :logos="$logos"/>
-    <a href="https://wa.me/YOUR_PHONE_NUMBER" target="_blank"
+    <a href="https://wa.me/{{$whatsapp}}" target="_blank"
         class="fixed bottom-18 right-5 lg:right-35 lg:bottom-25 m-4 z-20 bg-green-500 p-3 rounded-full shadow-lg flex items-center justify-center hover:bg-green-600">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"

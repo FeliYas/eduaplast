@@ -2,14 +2,18 @@
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import DataTable from '@/components/DataTable.vue';
 
+defineOptions({
+    layout: DashboardLayout
+});
+
 // Definición de las columnas
 const columns = ['orden', 'titulo', 'descripcion', 'categoria_id', 'ficha', 'imagenes'];
 
-// Definición de rutas
-const createRoute = '/admin/productos/productos/store';
-const updateRoute = '/admin/productos/productos/update/__ID__';
-const deleteRoute = '/admin/productos/productos/delete/__ID__';
-const imgsRoute = '/admin/productos/productos/imagenes';
+// Definición de rutas dinámicas
+const createRoute = route('productos.store');
+const updateRoute = (id) => route('productos.update', { id });
+const deleteRoute = (id) => route('productos.destroy', { id });
+const imgsRoute = (id) => route('imagenes.dashboard', { id });
 
 const props = defineProps({
     logo: {
@@ -28,15 +32,13 @@ const props = defineProps({
 </script>
 
 <template>
-    <DashboardLayout :logo="logo">
-        <div>
-            <div class="py-3 text-xl text-gray-700">
-                <h1>Productos</h1>
-            </div>
-            <!-- Línea -->
-            <hr class="border-t-[3px] border-main-color rounded">
-            <DataTable :columns="columns" :data="productos" :categorias="categorias" :createRoute="createRoute" :updateRoute="updateRoute"
-                :deleteRoute="deleteRoute" :imgsRoute="imgsRoute" />
+    <div>
+        <div class="py-3 text-xl text-gray-700">
+            <h1>Productos</h1>
         </div>
-    </DashboardLayout>
+        <!-- Línea -->
+        <hr class="border-t-[3px] border-main-color rounded">
+        <DataTable :columns="columns" :data="productos" :categorias="categorias" :createRoute="createRoute" :updateRoute="updateRoute"
+            :deleteRoute="deleteRoute" :imgsRoute="imgsRoute" />
+    </div>
 </template>

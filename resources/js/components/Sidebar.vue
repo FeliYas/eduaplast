@@ -2,10 +2,9 @@
   <div class="p-3 flex flex-col bg-main-color h-screen fixed overflow-hidden transition-all duration-300 shadow-lg z-9"
     :class="{ 'w-[250px]': !collapsed, 'w-0 invisible': collapsed }">
     <!-- Logo Area -->
-    <div class="flex-grow">
-      <div
+    <div class="flex-grow">      <div
         class="flex items-center justify-center text-center mb-auto p-2 hover:scale-105 transition-transform duration-300">
-        <Link href="/adm" class="inline-block relative group cursor-pointer">
+        <Link :href="route('dashboard')" class="inline-block relative group cursor-pointer">
         <img :src="logoPath" alt="Logo" class="object-cover relative z-10" />
         </Link>
       </div>
@@ -29,18 +28,16 @@
 
             <ul class="relative overflow-hidden transition-all duration-300"
               :style="{ maxHeight: openSubmenus.homeSubmenu ? homeSubmenuHeight + 'px' : '0px' }" ref="homeSubmenu">
-              <div class="absolute left-6 w-0.5 h-25 bg-gray-200 opacity-80 rounded-sm mr-3"></div>
-              <li>
-                <Link href="/admin/home/slider"
+              <div class="absolute left-6 w-0.5 h-25 bg-gray-200 opacity-80 rounded-sm mr-3"></div>              <li>
+                <Link :href="route('admin.slider')"
                   class="block pl-10 py-2 text-gray-200 hover:text-white rounded-lg transition-all duration-200 my-1 cursor-pointer">
                 <span class="opacity-80 hover:opacity-100 transition-opacity flex items-center">
                   <i class="fa-solid fa-image-portrait w-5 mr-2 text-xs"></i>
                   Slider
                 </span>
                 </Link>
-              </li>
-              <li>
-                <Link href="/admin/home/contenido"
+              </li>              <li>
+                <Link :href="route('contenido.dashboard')"
                   class="block pl-10 py-2 text-gray-200 hover:text-white rounded-lg transition-all duration-200 my-1 cursor-pointer">
                 <span class="opacity-80 hover:opacity-100 transition-opacity flex items-center">
                   <i class="fa-solid fa-align-left w-5 mr-2 text-xs"></i>
@@ -49,10 +46,8 @@
                 </Link>
               </li>
             </ul>
-          </li>
-
-          <li>
-            <Link href="/admin/nosotros"
+          </li>          <li>
+            <Link :href="route('nosotros.dashboard')"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group cursor-pointer">
             <i class="fa-solid fa-address-card text-center w-5 text-white"></i>
             <span class="whitespace-nowrap group-hover:translate-x-1 transition-transform duration-200">Nosotros</span>
@@ -76,10 +71,8 @@
             <ul class="relative overflow-hidden transition-all duration-300"
               :style="{ maxHeight: openSubmenus.productosSubmenu ? productosSubmenuHeight + 'px' : '0px' }"
               ref="productosSubmenu">
-              <div class="absolute left-6 w-0.5 h-20 bg-gray-200 opacity-80 rounded-sm mr-3"></div>
-
-              <li>
-                <Link href="/admin/productos/categorias"
+              <div class="absolute left-6 w-0.5 h-20 bg-gray-200 opacity-80 rounded-sm mr-3"></div>              <li>
+                <Link :href="route('categorias.dashboard')"
                   class="block pl-10 py-2 text-gray-200 hover:text-white rounded-lg transition-all duration-200 my-1 cursor-pointer">
                 <span class="opacity-80 hover:opacity-100 transition-opacity flex items-center">
                   <i class="fa-solid fa-layer-group w-5 mr-2 text-xs"></i>
@@ -89,7 +82,7 @@
               </li>
 
               <li>
-                <Link href="/admin/productos/productos"
+                <Link :href="route('productos.dashboard')"
                   class="block pl-10 py-2 text-gray-200 hover:text-white rounded-lg transition-all duration-200 my-1 cursor-pointer">
                 <span class="opacity-80 hover:opacity-100 transition-opacity flex items-center">
                   <i class="fa-solid fa-box-open w-5 mr-2 text-xs"></i>
@@ -98,9 +91,8 @@
                 </Link>
               </li>
             </ul>
-          </li>
-          <li>
-            <Link href="/admin/sectores"
+          </li>          <li>
+            <Link :href="route('sectores.dashboard')"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group cursor-pointer">
               <i class="fa-solid fa-share-nodes text-center w-5 text-white"></i>
             <span class="whitespace-nowrap group-hover:translate-x-1 transition-transform duration-200">Sectores</span>
@@ -108,7 +100,7 @@
             </Link>
           </li>
           <li>
-            <Link href="/admin/matriceria"
+            <Link :href="route('matriceria.dashboard')"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group cursor-pointer">
               <i class="fa-solid fa-hard-drive text-center w-5 text-white"></i>
             <span class="whitespace-nowrap group-hover:translate-x-1 transition-transform duration-200">Matriceria propia</span>
@@ -116,15 +108,14 @@
             </Link>
           </li>
           <li>
-            <Link href="/admin/clientes"
+            <Link :href="route('clientes.dashboard')"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group cursor-pointer">
               <i class="fa-solid fa-user-tag text-center w-5 text-white"></i>
             <span class="whitespace-nowrap group-hover:translate-x-1 transition-transform duration-200">Clientes</span>
             <span></span>
             </Link>
-          </li>
-          <li>
-            <Link href="/admin/novedades"
+          </li>          <li>
+            <Link :href="route('novedades.dashboard')"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group cursor-pointer">
             <i class="fa-solid fa-newspaper text-center w-5 text-white"></i>
             <span class="whitespace-nowrap group-hover:translate-x-1 transition-transform duration-200">Novedades</span>
@@ -132,17 +123,15 @@
             </Link>
           </li>
           <li>
-            <Link href="/admin/contacto"
+            <Link :href="route('contacto.dashboard')"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group cursor-pointer">
             <i class="fa-solid fa-square-phone text-center w-5 text-white"></i>
             <span class="whitespace-nowrap group-hover:translate-x-1 transition-transform duration-200">Contacto</span>
             <span></span>
             </Link>
           </li>
-          <hr class="mx-6 my-2 border-t-[1px] border-white/30" />
-
-          <li>
-            <Link href="/admin/logos"
+          <hr class="mx-6 my-2 border-t-[1px] border-white/30" />          <li>
+            <Link :href="route('logos.dashboard')"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group relative overflow-hidden cursor-pointer">
             <div
               class="absolute left-0 top-0 h-full w-0 bg-white/10 transition-all duration-300 group-hover:w-full rounded-lg">
@@ -154,7 +143,7 @@
             </Link>
           </li>
           <li>
-            <Link href="/admin/usuarios"
+            <Link :href="route('usuarios.dashboard')"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group relative overflow-hidden cursor-pointer">
             <div
               class="absolute left-0 top-0 h-full w-0 bg-white/10 transition-all duration-300 group-hover:w-full rounded-lg">
@@ -166,7 +155,7 @@
             </Link>
           </li>
           <li>
-            <Link href="/admin/metadatos"
+            <Link :href="route('metadatos.dashboard')"
               class="grid grid-cols-[24px_1fr_24px] items-center gap-3 px-4 py-3 text-white hover:bg-white/10 rounded-lg transition-all duration-200 group relative overflow-hidden cursor-pointer">
             <div
               class="absolute left-0 top-0 h-full w-0 bg-white/10 transition-all duration-300 group-hover:w-full rounded-lg">
@@ -193,6 +182,7 @@
 
 <script>
 import { Link } from '@inertiajs/vue3';
+import { route } from 'ziggy-js';
 
 export default {
   components: {
@@ -241,7 +231,7 @@ export default {
     }
   },
   mounted() {
-    this.logoPath = this.logo && this.logo.path ? `/storage/${this.logo.path}` : 'images/default-logo.png';
+    this.logoPath = this.logo && this.logo.path ? this.logo.path : 'images/default-logo.png';
 
     // Calculate submenu heights on mount
     this.$nextTick(() => {

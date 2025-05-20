@@ -14,7 +14,7 @@ import { Head } from '@inertiajs/vue3'
       </a>
       <div>
         <div class="flex justify-center p-6 mb-6">
-          <img :src="'/storage/' + logo.path" :alt="logo.seccion"
+          <img :src="logo.path" :alt="logo.seccion"
             class="h-20 transition-transform duration-300 hover:scale-105">
         </div>
         <div class="bg-white shadow-2xl shadow-[#292b2a] rounded-lg p-8 max-w-lg w-[500px] login-card"

@@ -33,7 +33,7 @@ class ProductoController extends Controller
             'ficha' => 'nullable|mimes:pdf|max:2048',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $fichaPath = null;
         if ($request->hasFile('ficha')) {
@@ -49,7 +49,9 @@ class ProductoController extends Controller
             'ficha' => $fichaPath
         ]);
 
-        return $this->success_response('Producto creado exitosamente.');
+        
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('productos.dashboard')->with('message', 'Producto creado exitosamente');
     }
     public function update(Request $request, $id)
     {
@@ -61,7 +63,7 @@ class ProductoController extends Controller
             'ficha' => 'nullable|mimes:pdf|max:2048',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $producto = Producto::find($id);
 
@@ -84,7 +86,8 @@ class ProductoController extends Controller
             'categoria_id' => $request->categoria_id,
         ]));
 
-        return $this->success_response('Producto actualizado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('productos.dashboard')->with('message', 'Producto actualizado exitosamente');
     }
 
     public function destroy($id)
@@ -98,7 +101,7 @@ class ProductoController extends Controller
         // Eliminar el registro de la base de datos
         $producto->delete();
 
-        // Redirect or return response
-        return $this->success_response('Producto y sus fotos eliminados exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('productos.dashboard')->with('message', 'Producto eliminado exitosamente');
     }
 }

@@ -1,7 +1,9 @@
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, inject } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import QuillEditor from '@/components/QuillEditor.vue'; 
+
+const notification = inject('noti');
 
 const props = defineProps({
     imagen: {
@@ -45,9 +47,14 @@ const toggleEdit = () => {
 const submit = () => {
     form.post(route('tarjetanos.update', { id: props.id, num: props.num }), {
         preserveScroll: true,
-        onSuccess: () => {
-            isEditing.value = false;
-        }
+        onSuccess: (page) => {
+            // Accede al mensaje flash de la respuesta
+            if (page.props.flash && page.props.flash.message) {
+                notification({ message: page.props.flash.message, type: "success" });
+            } else {
+                notification({ message: "Actualizado correctamente", type: "success" });
+            }
+        },
     });
 };
 
@@ -70,7 +77,7 @@ const getDefaultTitle = () => {
             <div v-if="!isEditing" class="flex flex-col h-full items-center text-center py-4" key="view">
                 <!-- Imagen -->
                 <div class="mb-4 w-24 h-24 overflow-hidden flex items-center justify-center">
-                    <img :src="`/storage/${imagen}`" :alt="`Imagen de ${titulo || getDefaultTitle()}`" class="object-cover rounded-full">
+                    <img :src="imagen" :alt="`Imagen de ${titulo || getDefaultTitle()}`" class="object-cover rounded-full">
                 </div>
                 
                 <!-- Título -->

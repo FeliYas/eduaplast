@@ -8,6 +8,7 @@ use App\Models\Slider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class SliderController extends Controller
 {
@@ -18,7 +19,7 @@ class SliderController extends Controller
             'logo' => Logo::where('seccion', 'dashboard')->first()
         ]);
     }
-    
+
     public function store(Request $request)
     {
         // Validar los datos del formulario
@@ -28,7 +29,7 @@ class SliderController extends Controller
             'titulo' => 'required|string|max:255',
             'descripcion' => 'nullable|string|max:255',
         ]);
-        
+
         if ($validator->fails()) {
             return $this->error_response($validator->messages()->first());
         }
@@ -39,7 +40,7 @@ class SliderController extends Controller
             $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
             $filePath = $file->storeAs('images', $fileName, 'public');
         }
-        
+
         // Crear el slider con los datos validados
         $slider = Slider::create([
             'orden' => $request->orden,
@@ -48,9 +49,10 @@ class SliderController extends Controller
             'descripcion' => $request->descripcion,
         ]);
 
-        return $this->success_response('Slider creado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('admin.slider')->with('message', 'Slider creado exitosamente');
     }
-    
+
     public function edit($id)
     {
         $slider = Slider::findOrFail($id);
@@ -66,7 +68,7 @@ class SliderController extends Controller
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string|max:255',
         ]);
-        
+
         if ($validator->fails()) {
             return $this->error_response($validator->messages()->first());
         }
@@ -78,7 +80,7 @@ class SliderController extends Controller
         $slider->orden = $request->input('orden');
         $slider->titulo = $request->input('titulo');
         $slider->descripcion = $request->input('descripcion');
-        
+
         // Si hay una nueva imagen, manejar la subida
         if ($request->hasFile('path')) {
             // Eliminar la imagen anterior si existe
@@ -94,9 +96,10 @@ class SliderController extends Controller
         // Guardar los cambios en la base de datos
         $slider->save();
 
-        return $this->success_response('Slider actualizado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('admin.slider')->with('message', 'Slider editado exitosamente');
     }
-    
+
     public function destroy($id)
     {
         $slider = Slider::findOrFail($id);
@@ -109,6 +112,7 @@ class SliderController extends Controller
         // Eliminar el registro de la base de datos
         $slider->delete();
 
-        return $this->success_response('Slider eliminado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('admin.slider')->with('message', 'Slider eliminado exitosamente');
     }
 }

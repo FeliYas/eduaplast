@@ -16,4 +16,9 @@ class ProductoImg extends Model
     {
         return $this->belongsTo(Producto::class);
     }
+
+    public function getPathAttribute($value)
+    {
+        return asset('storage/' . $value);
+    }
 }

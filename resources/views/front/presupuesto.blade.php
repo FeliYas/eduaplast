@@ -2,196 +2,197 @@
 @section('title', 'Presupuesto')
 
 @section('content')
-    <div>
-        <div class="bg-gray-100">
-            <div class="max-w-[70%] mx-auto">
-                <div class="text-xs mt-10">
-                    <!-- Ruta de navegación -->
-                    <div class="text-black hidden lg:block">
-                        <a href="{{ route('home') }}" class="hover:underline">Inicio</a>
-                        <span class="mx-[5px]">&gt;</span>
-                        <a href="{{ route('presupuesto') }}" class="text-gray-500 hover:underline">Presupuesto</a>
+    <div class="text-black">
+        <div class="bg-gray-100 ">
+            <div class="max-w-[80%] lg:max-w-[60%] mx-auto">
+                <div class="py-7">
+                    <div class="text-xs">
+                        <!-- Ruta de navegación -->
+                        <div class="text-black hidden lg:block">
+                            <a href="{{ route('home') }}" class="hover:underline">Inicio</a>
+                            <span class="mx-[5px]">&gt;</span>
+                            <a href="{{ route('presupuesto') }}" class="text-gray-500 hover:underline">Presupuesto</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-
-        {{-- Contenido principal --}}
-        <div class="py-5">
-
-            {{-- Alertas de éxito o error --}}
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            {{-- Productos --}}
-            <div class="mb-5">
-                @if (session('carrito_consulta') && count(session('carrito_consulta')) > 0)
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Productos</th>
-                                <th style="width: 150px">Cantidad</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (session('carrito_consulta') as $producto)
-                                <tr>
-                                    <td class="align-middle">
-                                        <img src="{{ asset(Storage::url($producto->imagen)) }}"
-                                            alt="{{ $producto->nombre }}" style="max-width: 100px;">
-                                        <span class="ms-3">{{ $producto->nombre }}</span>
-                                    </td>
-                                    <td class="align-middle">
-                                        <input type="number" name="cantidades[{{ $producto->id }}]"
-                                            class="form-control cantidad-producto" min="1" value="1"
-                                            data-id="{{ $producto->id }}">
-                                    </td>
-                                    <td class="align-middle">
-                                        <form method="POST" action="{{ route('page.consulta.eliminar', $producto->id) }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-link text-danger"><i
-                                                    class="fas fa-trash"></i></button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <div class="alert alert-warning text-center py-5" role="alert" style="font-size: 1.2rem;">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        No tenés productos seleccionados. Seleccioná productos para enviar la consulta.
+                @if (session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        {{ session('success') }}
                     </div>
                 @endif
 
-                <div>
-                    <a href="{{ route('categorias') }}" class="btn-home-1">+ Agregar Productos</a>
+                @if ($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                {{-- Productos --}}
+                <div class="pb-5 max-w-[95%] lg:max-w-[85%] mx-auto flex justify-center items-center w-full">
+                    @if (session('carrito_consulta') && count(session('carrito_consulta')) > 0)
+                        <div class="py-12 flex flex-col gap-8 w-full">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl lg:text-[30px] font-bold text-black">Productos</h2>
+                                <a href="{{ route('categorias') }}" class="btn-home-1 flex items-center">
+                                    <i class="fa-solid fa-plus lg:mx-3"></i>
+                                    <span class="hidden lg:inline">Agregar productos</span>
+                                </a>
+
+                            </div>
+                            @foreach (session('carrito_consulta') as $producto)
+                                <div
+                                    class="h-[140px] rounded-lg bg-white shadow-md flex items-center justify-between overflow-hidden border border-gray-200 px-1 lg:px-5 lg:py-2.5">
+                                    <div class="flex items-center gap-4 lg:gap-12">
+                                        @if ($producto->imagenPrincipal()->first())
+                                            <img src="{{ asset($producto->imagenPrincipal()->first()->path) }}"
+                                                alt="image"
+                                                class="w-[70px] lg:w-[100px] h-[70px] lg:h-[100px] object-cover">
+                                        @else
+                                            <div
+                                                class="w-[70px] lg:w-[100px] h-[70px] lg:h-[100px] flex items-center justify-center bg-gray-200 text-gray-500 text-sm">
+                                                Sin imagen
+                                            </div>
+                                        @endif
+                                        <div class="flex flex-col gap-2 max-w-[130px] lg:max-w-[400px]">
+                                            <h3 class="lg:text-2xl font-medium">{{ $producto->titulo }}</h3>
+                                            <div class="overflow-auto line-clamp-2">{!! $producto->descripcion !!}</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col md:flex-row items-center gap-3 md:gap-5">
+                                        <a href="{{ route('producto', ['id' => $producto->categoria->id, 'producto' => $producto->id]) }}"
+                                            class="btn-home-1 w-full md:w-[184px] flex justify-center items-center">
+                                            <span class="md:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                    viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                    <path fill-rule="evenodd"
+                                                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg></span>
+                                            <span class="hidden md:block">Ver producto</span>
+                                        </a>
+                                        <form method="POST" action="{{ route('presupuesto.delete', $producto->id) }}"
+                                            class="w-full md:w-auto">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="btn-home-2 w-full md:w-[184px] flex justify-center items-center">
+                                                <span class="md:hidden"><svg xmlns="http://www.w3.org/2000/svg"
+                                                        class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                            clip-rule="evenodd" />
+                                                    </svg></span>
+                                                <span class="hidden md:block">Eliminar</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="py-12 flex flex-col gap-8 w-full">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl lg:text-[30px] font-bold text-black">Productos</h2>
+                                <a href="{{ route('categorias') }}" class="btn-home-1 flex items-center">
+                                    <i class="fa-solid fa-plus lg:mx-3"></i>
+                                    <span class="hidden lg:inline">Agregar productos</span>
+                                </a>
+                            </div>
+                            <div
+                                class="h-[140px] rounded-lg bg-white shadow-md flex items-center justify-center overflow-hidden border border-gray-200 px-1 lg:px-5 lg:py-2.5 py-1">
+                                <div class="flex flex-col items-center">
+                                    <p class="lg:text-2xl font-medium ">No hay productos en el carrito</p>
+                                    <p class="text-sm text-gray-700">Seleccioná productos para enviar la consulta.</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
+        </div>
 
-            {{-- Contacto --}}
-            <div class="row">
+        <div class="py-14 max-w-[80%] lg:max-w-[60%] mx-auto">
+            <div class="mb-8 max-w-[95%] lg:max-w-[85%] mx-auto">
+                <h2 class="text-xl lg:text-[30px] font-bold text-black pb-10">Datos personales</h2>
 
-                {{-- Formulario de compra --}}
-                <div class="col-md-8">
-                    <form method="post" action="{{ route('presupuesto.enviar') }}" enctype="multipart/form-data"
-                        id="formularioConsulta">
-                        @csrf
+                <form action="{{ route('presupuesto.enviar') }}" method="POST" class="space-y-6 py-6">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Nombre y apellido -->
+                        <div class="space-y-2">
+                            <label for="nombre" class="block font-medium text-black">Nombre y apellido*</label>
+                            <input type="text" id="nombre" name="nombre" required
+                                class="w-full border border-gray-200 h-12 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
 
-                        {{-- Campo oculto para verificar si el carrito está vacío --}}
-                        <input type="hidden" name="carrito_vacio"
-                            value="{{ session('carrito_consulta') && count(session('carrito_consulta')) > 0 ? '0' : '1' }}">
+                        <!-- Email -->
+                        <div class="space-y-2">
+                            <label for="email" class="block font-medium text-black">Email*</label>
+                            <input type="email" id="email" name="email" required
+                                class="w-full border border-gray-200 h-12 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
 
-                        <div class="row mt-4">
-                            <div class="form-floating col-md-6 mb-3">
-                                <input type="text" class="form-control @error('nombre') is-invalid @enderror"
-                                    id="nombre" name="nombre" value="{{ old('nombre') }}" placeholder="Nombre"
-                                    required>
-                                <label for="nombre" class="formulario ms-3">Nombre*</label>
-                                @error('nombre')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Teléfono -->
+                        <div class="space-y-2">
+                            <label for="telefono" class="block font-medium text-black">Teléfono*</label>
+                            <input type="tel" id="telefono" name="telefono" required
+                                class="w-full border border-gray-200 h-12 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
 
-                            <div class="form-floating col-md-6 mb-3">
-                                <input type="text" class="form-control @error('apellido') is-invalid @enderror"
-                                    id="apellido" name="apellido" value="{{ old('apellido') }}" placeholder="Apellido"
-                                    required>
-                                <label for="apellido" class="formulario ms-3">Apellido*</label>
-                                @error('apellido')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                        <!-- Empresa -->
+                        <div class="space-y-2">
+                            <label for="empresa" class="block font-medium text-black">Empresa</label>
+                            <input type="text" id="empresa" name="empresa"
+                                class="w-full border border-gray-200 h-12 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="md:w-1/2">
+                            <div class="space-y-2">
+                                <label for="mensaje" class="block font-medium text-black">Mensaje*</label>
+                                <textarea id="mensaje" name="mensaje" rows="10" required
+                                    class="w-full h-[180px] border border-gray-300 rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="form-floating col-md-6 mb-3">
-                                <input type="text" class="form-control @error('telefono') is-invalid @enderror"
-                                    id="telefono" name="telefono" value="{{ old('telefono') }}" placeholder="Teléfono"
-                                    required>
-                                <label for="telefono" class="formulario ms-3">Teléfono*</label>
-                                @error('telefono')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                        <div class="md:w-1/2 flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <label for="archivo_input" class="block font-medium text-black">Adjuntar archivo</label>
 
-                            <div class="form-floating col-md-6 mb-3">
-                                <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                    id="email" name="email" value="{{ old('email') }}" placeholder="E-mail"
-                                    required>
-                                <label for="email" class="formulario ms-3">E-mail*</label>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+                                <!-- Botón personalizado que activa el input de archivo -->
+                                <label for="archivo_input" class="cursor-pointer">
+                                    <div
+                                        class="flex items-center justify-between border border-gray-300 rounded p-2 hover:bg-gray-50">
+                                        <span class="text-gray-500" id="file-selected">Seleccionar archivo</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                        </svg>
+                                    </div>
+                                </label>
 
-                        <div class="row">
-                            <div class="form-floating col-md-6 mb-3">
-                                <input type="text" class="form-control @error('provincia') is-invalid @enderror"
-                                    id="provincia" name="provincia" value="{{ old('provincia') }}" placeholder="Provincia"
-                                    required>
-                                <label for="provincia" class="formulario ms-3">Provincia*</label>
-                                @error('provincia')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <!-- Input de archivo real (oculto) -->
+                                <input type="file" id="archivo_input" name="archivo" class="hidden"
+                                    onchange="document.getElementById('file-selected').textContent = this.files[0] ? this.files[0].name : 'Seleccionar archivo'">
                             </div>
-
-                            <div class="form-floating col-md-6 mb-3">
-                                <input type="text" class="form-control @error('localidad') is-invalid @enderror"
-                                    id="localidad" name="localidad" value="{{ old('localidad') }}"
-                                    placeholder="Localidad" required>
-                                <label for="localidad" class="formulario ms-3">Localidad*</label>
-                                @error('localidad')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <div class="mt-auto flex flex-col lg:flex-row gap-4 items-center justify-between py-4 lg:py-0">
+                                <p class="text-black">*Campos obligatorios</p>
+                                <button type="submit" class="btn-home-1 lg:w-3/5">Enviar solicitud de
+                                    presupuesto</button>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="form-floating col-md-12 mb-3">
-                                <textarea class="form-control @error('mensaje') is-invalid @enderror" placeholder="Mensaje..." id="mensaje"
-                                    name="mensaje" style="height: 100px">{{ old('mensaje') }}</textarea>
-                                <label for="mensaje" class="formulario ms-3">Mensaje</label>
-                                @error('mensaje')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        {{-- Campos ocultos para almacenar la información de los productos --}}
-                        @if (session('carrito_consulta') && count(session('carrito_consulta')) > 0)
-                            @foreach (session('carrito_consulta') as $producto)
-                                <input type="hidden" name="productos[{{ $producto->id }}]"
-                                    value="{{ $producto->nombre }}">
-                                <input type="hidden" name="productos_cantidades[{{ $producto->id }}]"
-                                    class="cantidad-hidden" data-id="{{ $producto->id }}" value="1">
-                            @endforeach
-                        @endif
-
-                        <div class="row my-4">
-                            <!-- Campo oculto para reCAPTCHA -->
-                            <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response-consulta">
-
-                            <div class="col-md-6 d-flex justify-content-end align-items-center">
-                                <button type="submit" class="btn-cv">Enviar formulario de compra</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

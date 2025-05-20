@@ -26,9 +26,9 @@ class LogoController extends Controller
             'path' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048', // Cambiado 'image' por 'file'
             'seccion' => 'nullable|string|max:255',
         ]);
-        
+
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $logo = Logo::find($id);
         if ($request->hasFile('path')) {
@@ -45,6 +45,8 @@ class LogoController extends Controller
         $logo->path = $filePath;
         $logo->seccion = $request->seccion ?? $logo->seccion;
         $logo->save();
-        return $this->success_response('Logo actualizado exitosamente.');
+        
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('logos.dashboard')->with('message', 'Logo actualizado exitosamente');
     }
 }

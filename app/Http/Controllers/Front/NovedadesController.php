@@ -17,13 +17,15 @@ class NovedadesController extends Controller
         $metadatos = Metadato::where('seccion', 'novedades')->first();
         $logos = Logo::whereIn('seccion', ['navbar', 'footer'])->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
-        return view('front.novedades', compact('novedades', 'metadatos', 'logos', 'contactos'));
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
+        return view('front.novedades', compact('novedades', 'metadatos', 'logos', 'contactos', 'whatsapp'));
     }
     public function show($id)
     {
         $novedad = Novedade::findOrFail($id);
         $logos = Logo::whereIn('seccion', ['navbar', 'footer'])->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
-        return view('front.novedad', compact('novedad', 'logos', 'contactos'));
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
+        return view('front.novedad', compact('novedad', 'logos', 'contactos', 'whatsapp'));
     }
 }

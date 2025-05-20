@@ -6,20 +6,21 @@
 @section('title', 'Clientes')
 
 @section('content')
-    <div class="max-w-[70%] mx-auto">
-        <div>
-            <!-- Ruta de navegación -->
-            <div class="text-black hidden lg:block mt-8 text-xs">
-                <a href="{{ route('home') }}" class="hover:underline">Inicio</a>
-                <span class="mx-[5px]">&gt;</span>
-                <a href="{{ route('clientes') }}" class="text-gray-500 hover:underline">Clientes</a>
-                <span class="mx-[5px]"></span>
+    <div class="max-w-[80%] lg:max-w-[60%] mx-auto min-h-[500px] mb-10 lg:mb-0">
+        <div class="py-7">
+            <div class="text-xs">
+                <!-- Ruta de navegación -->
+                <div class="text-black hidden lg:block">
+                    <a href="{{ route('home') }}" class="hover:underline">Inicio</a>
+                    <span class="mx-[5px]">&gt;</span>
+                    <a href="{{ route('clientes') }}" class="text-gray-500 hover:underline">Clientes</a>
+                </div>
             </div>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-6 gap-6 py-20">
+        <div class="grid grid-cols-1 lg:grid-cols-6 gap-6 lg:py-8 mb-0 lg:mb-15">
             @foreach ($clientes as $cliente)
                 <div class="h-[190px] max-w-[300px] bg-white p-4 rounded-xl shadow-md border border-gray-200">
-                    <img src="{{ asset('storage/' . $cliente->path) }}" alt="cliente"
+                    <img src="{{ asset($cliente->path) }}" alt="cliente"
                         class="w-full h-full object-contain transition-all duration-300 filter grayscale hover:grayscale-0">
                 </div>
             @endforeach

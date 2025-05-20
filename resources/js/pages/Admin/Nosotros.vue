@@ -1,9 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import QuillEditor from '@/components/QuillEditor.vue';
 import TarjetaNosotros from '@/components/TarjetaNosotros.vue';
+
+defineOptions({
+    layout: DashboardLayout
+});
+
+// Inyectar el sistema de notificaciones global
+const notification = inject('noti');
 
 const props = defineProps({
     logo: {
@@ -27,7 +34,7 @@ const form = useForm({
 
 // Set initial image preview
 onMounted(() => {
-    imagePreview.value = `/storage/${props.nosotros.path}`;
+    imagePreview.value = props.nosotros.path;
 });
 
 // Preview the selected image
@@ -45,26 +52,26 @@ const previewImage = (event) => {
 
 // Submit the form for update
 const submit = () => {
-    const formData = new FormData();
-    formData.append('titulo', form.titulo);
-    formData.append('descripcion', form.descripcion);
-    if (form.path) {
-        formData.append('path', form.path);
-    }
-
     form.post(route('nosotros.update', props.nosotros.id), {
-        data: formData,
-        forceFormData: true,
         preserveScroll: true,
-        onSuccess: () => {
-            // You can add success notification here
-        }
+        onSuccess: (page) => {
+            // Accede al mensaje flash de la respuesta
+            if (page.props.flash && page.props.flash.message) {
+                notification({ message: page.props.flash.message, type: "success" });
+            } else {
+                notification({ message: "Actualizado correctamente", type: "success" });
+            }
+        },
+        onError: (errors) => {
+            console.log(errors);
+            notification({ message: errors[0], type: "error" });
+        },
     });
 };
 </script>
 
 <template>
-    <DashboardLayout :logo="logo">
+    
         <div class="group relative h-full">
             <div class="py-3 text-xl text-gray-700">
                 <h1>Nosotros</h1>
@@ -176,5 +183,5 @@ const submit = () => {
                 </div>
             </div>
         </div>
-    </DashboardLayout>
+    
 </template>

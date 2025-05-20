@@ -27,7 +27,7 @@ class MetadatoController extends Controller
             'keyword' => 'nullable|string|max:255',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $meta = Metadato::find($id);
         $meta->seccion = $request->seccion;
@@ -36,6 +36,7 @@ class MetadatoController extends Controller
         $meta->save();
 
 
-        return $this->success_response('Metadato actualizado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('metadatos.dashboard')->with('message', 'Metadato actualizado exitosamente');
     }
 }

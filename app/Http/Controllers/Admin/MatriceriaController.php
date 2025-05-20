@@ -23,12 +23,12 @@ class MatriceriaController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'path' => 'nullable|mimes:jpeg,png,jpg,gif,svg,mp4,avi,mov|max:100000', 
+            'path' => 'nullable|mimes:jpeg,png,jpg,gif,svg,mp4,avi,mov|max:100000',
             'titulo' => 'nullable|string|max:255',
             'descripcion' => 'nullable|required',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         $matriceria = Matriceria::findOrFail($id);
 
@@ -50,7 +50,7 @@ class MatriceriaController extends Controller
         }
         $matriceria->save();
 
-        // Redirigir con un mensaje de éxito
-        return $this->success_response('Matriceria propia actualizada exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('matriceria.dashboard')->with('message', 'Matriceria actualizada exitosamente');
     }
 }

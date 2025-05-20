@@ -17,6 +17,7 @@ class ClientesaController extends Controller
         $metadatos = Metadato::where('seccion', 'clientes')->first();
         $logos = Logo::whereIn('seccion', ['navbar', 'footer'])->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
-        return view('front.clientes', compact('clientes', 'metadatos', 'logos', 'contactos'));
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
+        return view('front.clientes', compact('clientes', 'metadatos', 'logos', 'contactos', 'whatsapp'));
     }
 }

@@ -38,7 +38,7 @@ class UsuarioController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
         // Crear el nuevo usuario
         $usuario = new User();
@@ -51,7 +51,8 @@ class UsuarioController extends Controller
         // Guardar el nuevo usuario en la base de datos
         $usuario->save();
 
-        return $this->success_response('Usuario creado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('usuarios.dashboard')->with('message', 'Usuario creado exitosamente');
     }
 
     public function update(Request $request, $id)
@@ -65,7 +66,7 @@ class UsuarioController extends Controller
             'role' => 'required|in:admin,user',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
 
         // Buscar el usuario a actualizar
@@ -85,8 +86,8 @@ class UsuarioController extends Controller
         // Guardar los cambios en la base de datos
         $usuario->save();
 
-        // Redirigir con un mensaje de éxito
-        return $this->success_response('Usuario actualizado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('usuarios.dashboard')->with('message', 'Usuario actualizado exitosamente');
     }
 
     public function destroy($id)
@@ -97,7 +98,7 @@ class UsuarioController extends Controller
         // Eliminar el usuario
         $usuario->delete();
 
-        // Redirigir con un mensaje de éxito
-        return $this->success_response('Usuario eliminado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('usuarios.dashboard')->with('message', 'Usuario eliminado exitosamente');
     }
 }

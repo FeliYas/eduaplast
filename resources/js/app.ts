@@ -30,16 +30,7 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(Toast, {
-                position: 'bottom-right',
-                timeout: 5000,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: false,
-                maxToasts: 3,
-                newestOnTop: true,
-            } as PluginOptions)
+            .use(Toast)
             .mount(el);
     },
     progress: {

@@ -17,4 +17,9 @@ class Categoria extends Model
     {
         return $this->hasMany(Producto::class);
     }
+
+    public function getPathAttribute($value)
+    {
+        return asset('storage/' . $value);
+    }
 }

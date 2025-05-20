@@ -18,7 +18,8 @@ class ProductosController extends Controller
         $metadatos = Metadato::where('seccion', 'productos')->first();
         $logos = Logo::whereIn('seccion', ['navbar', 'footer'])->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
-        return view('front.categorias', compact('categorias', 'metadatos', 'logos', 'contactos'));
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
+        return view('front.categorias', compact('categorias', 'metadatos', 'logos', 'contactos', 'whatsapp'));
     }
     public function productos($id)
     {
@@ -27,7 +28,8 @@ class ProductosController extends Controller
         $categoria = Categoria::findOrFail($id);
         $logos = Logo::whereIn('seccion', ['navbar', 'footer'])->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
-        return view('front.productos', compact('productos', 'categorias', 'categoria', 'logos', 'contactos'));
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
+        return view('front.productos', compact('productos', 'categorias', 'categoria', 'logos', 'contactos', 'whatsapp'));
     }
     public function producto($id, $producto)
     {
@@ -43,6 +45,7 @@ class ProductosController extends Controller
         $categorias = Categoria::orderBy('orden', 'asc')->get();
         $logos = Logo::whereIn('seccion', ['navbar', 'footer'])->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
 
         return view('front.producto', compact(
             'producto',
@@ -50,7 +53,8 @@ class ProductosController extends Controller
             'categoria',
             'logos',
             'contactos',
-            'productosRelacionados'
+            'productosRelacionados',
+            'whatsapp'
         ));
     }
 }

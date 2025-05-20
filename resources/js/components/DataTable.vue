@@ -1,220 +1,266 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { router } from '@inertiajs/vue3';
-import DeleteModal from '@/components/Modales/DeleteModal.vue';
-import QuillEditor from '@/components/QuillEditor.vue'; // Import QuillEditor
+    import { ref, computed, onMounted, inject } from 'vue';
+    import { router } from '@inertiajs/vue3';
+    import DeleteModal from '@/components/Modales/DeleteModal.vue';
+    import QuillEditor from '@/components/QuillEditor.vue'; // Import QuillEditor
 
-const props = defineProps({
-    columns: Array,
-    data: Array,
-    deleteRoute: String,
-    updateRoute: String,
-    createRoute: String,
-    categorias: Array,
-    toggleDestacadoRoute: String,
-    imgsRoute: String,
-    productoId: Number // Add productoId prop
-});
-
-const showCreateModal = ref(false);
-const showEditModal = ref(false);
-const showDeleteModal = ref(false);
-const showPassword = ref(false);
-const showEditPassword = ref(false);
-const currentItemId = ref(null);
-const editFormData = ref({});
-const createFormData = ref({});
-const fileInputLabel = ref('Elija una imagen');
-const editFileInputLabel = ref('Elija una nueva imagen');
-const fichaInputLabel = ref('Elija un PDF');
-const editFichaInputLabel = ref('Elija un nuevo PDF');
-
-// Para la vista previa de imágenes
-const editImagePreview = ref('');
-
-const openCreateModal = () => {
-    // Reset form data
-    createFormData.value = {};
-    props.columns.forEach(column => {
-        if (column !== 'id' && column !== 'destacado') {
-            createFormData.value[column] = '';
-        }
-        if (column === 'role') {
-            createFormData.value[column] = 'user'; //
-        }
-    });
-    // Set producto_id in createFormData
-    createFormData.value.producto_id = props.productoId;
-    showPassword.value = false;
-    showCreateModal.value = true;
-};
-
-const closeCreateModal = () => {
-    showCreateModal.value = false;
-};
-
-const openEditModal = (item) => {
-    editFormData.value = { ...item };
-
-    // Si hay una imagen, configurar la vista previa
-    if (item.path) {
-        editImagePreview.value = `/storage/${item.path}`;
-    } else {
-        editImagePreview.value = '';
-    }
-
-    showEditPassword.value = false;
-    showEditModal.value = true;
-};
-
-const togglePasswordVisibility = () => {
-    showPassword.value = !showPassword.value;
-};
-
-const toggleEditPasswordVisibility = () => {
-    showEditPassword.value = !showEditPassword.value;
-};
-
-const closeEditModal = () => {
-    showEditModal.value = false;
-};
-
-const openDeleteModal = (id) => {
-    currentItemId.value = id;
-    showDeleteModal.value = true;
-};
-
-const closeDeleteModal = () => {
-    showDeleteModal.value = false;
-};
-
-const handleCreateFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        fileInputLabel.value = file.name;
-        createFormData.value.path = file;
-    } else {
-        fileInputLabel.value = 'Elija una imagen';
-    }
-};
-
-const handleEditFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        editFileInputLabel.value = file.name;
-        editFormData.value.path = file;
-    } else {
-        editFileInputLabel.value = 'Elija una nueva imagen';
-    }
-};
-const handleCreateFichaChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        fileInputLabel.value = file.name;
-        createFormData.value.path = file;
-    } else {
-        fileInputLabel.value = 'Elija una imagen';
-    }
-};
-const handleEditFichaChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        editFileInputLabel.value = file.name;
-        editFormData.value.path = file;
-    } else {
-        editFileInputLabel.value = 'Elija una nueva imagen';
-    }
-};
-const openFicha = (fichaPath) => {
-    if (fichaPath) {
-        // Abrir en una nueva pestaña para descargar/ver el PDF
-        window.open(`/storage/${fichaPath}`, '_blank');
-    }
-};
-const submitCreateForm = () => {
-    // Crear FormData para enviar archivos
-    const formData = new FormData();
-
-    Object.keys(createFormData.value).forEach(key => {
-        formData.append(key, createFormData.value[key]);
-    });
-
-    router.post(props.createRoute, formData, {
-        onSuccess: () => {
-            closeCreateModal();
-        }
-    });
-};
-
-const submitEditForm = () => {
-    const formData = new FormData();
-
-    Object.keys(editFormData.value).forEach(key => {
-        if (key !== 'id') {
-            // Si el campo es 'path' y no se seleccionó un archivo nuevo, no lo agregamos
-            if (key === 'path' && typeof editFormData.value[key] === 'string') {
-                return;
-            }
-            // Si el campo es 'ficha' y está vacío, no lo agregamos
-            if (key === 'ficha' && (!editFormData.value[key] || editFormData.value[key] === '')) {
-                return;
-            }
-            formData.append(key, editFormData.value[key]);
-        }
-    });
-
-    formData.append('_method', 'PUT');
-
-    const updateUrl = props.updateRoute.includes('__ID__')
-        ? props.updateRoute.replace('__ID__', editFormData.value.id)
-        : `${props.updateRoute}/${editFormData.value.id}`;
-
-    router.post(updateUrl, formData, {
-        onSuccess: () => {
-            closeEditModal();
-        }
-    });
-};
-
-const getCategoriaName = (categoriaId) => {
-    if (!props.categorias || !categoriaId) return 'N/A';
-    const categoria = props.categorias.find(cat => cat.id === categoriaId);
-    return categoria ? categoria.titulo.charAt(0).toUpperCase() + categoria.titulo.slice(1) : 'N/A';
-};
-
-const submitDeleteForm = () => {
-    const deleteUrl = props.deleteRoute.includes('__ID__')
-        ? props.deleteRoute.replace('__ID__', currentItemId.value)
-        : `${props.deleteRoute}/${currentItemId.value}`;
-
-    router.delete(deleteUrl, {
-        onSuccess: () => {
-            closeDeleteModal();
-        }
-    });
-};
-
-const toggleDestacado = (id, isChecked) => {
-    fetch(props.toggleDestacadoRoute, {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            "Content-Type": "application/json"
+    const props = defineProps({
+        columns: Array,
+        data: Array,
+        deleteRoute: {
+            type: Function,
+            required: true
         },
-        body: JSON.stringify({
-            id: id,
-            destacado: isChecked ? 1 : 0
+        updateRoute: {
+            type: Function,
+            required: true
+        },
+        createRoute: {
+            type: [String, Function], // createRoute puede ser string o función
+            required: true
+        },
+        categorias: Array,
+        toggleDestacadoRoute: {
+            type: Function,
+            required: true
+        },
+        imgsRoute: {
+            type: [String, Function],
+            required: true
+        },
+        productoId: Number // Add productoId prop
+    });
+
+    // Inyectar el sistema de notificaciones global
+    const notification = inject('noti');
+
+    const showCreateModal = ref(false);
+    const showEditModal = ref(false);
+    const showDeleteModal = ref(false);
+    const showPassword = ref(false);
+    const showEditPassword = ref(false);
+    const currentItemId = ref(null);
+    const editFormData = ref({});
+    const createFormData = ref({});
+    const fileInputLabel = ref('Elija una imagen');
+    const editFileInputLabel = ref('Elija una nueva imagen');
+    const fichaInputLabel = ref('Elija un PDF');
+    const editFichaInputLabel = ref('Elija un nuevo PDF');
+
+    // Para la vista previa de imágenes
+    const editImagePreview = ref('');
+
+    const openCreateModal = () => {
+        // Reset form data
+        createFormData.value = {};
+        props.columns.forEach(column => {
+            if (column !== 'id' && column !== 'destacado') {
+                createFormData.value[column] = '';
+            }
+            if (column === 'role') {
+                createFormData.value[column] = 'user'; //
+            }
+        });
+        // Set producto_id in createFormData
+        createFormData.value.producto_id = props.productoId;
+        showPassword.value = false;
+        showCreateModal.value = true;
+    };
+
+    const closeCreateModal = () => {
+        showCreateModal.value = false;
+    };
+
+    const openEditModal = (item) => {
+        editFormData.value = { ...item };
+
+        // Si hay una imagen, configurar la vista previa
+        if (item.path) {
+            editImagePreview.value = item.path;
+        } else {
+            editImagePreview.value = '';
+        }
+
+        showEditPassword.value = false;
+        showEditModal.value = true;
+    };
+
+    const togglePasswordVisibility = () => {
+        showPassword.value = !showPassword.value;
+    };
+
+    const toggleEditPasswordVisibility = () => {
+        showEditPassword.value = !showEditPassword.value;
+    };
+
+    const closeEditModal = () => {
+        showEditModal.value = false;
+    };
+
+    const openDeleteModal = (id) => {
+        currentItemId.value = id;
+        showDeleteModal.value = true;
+    };
+
+    const closeDeleteModal = () => {
+        showDeleteModal.value = false;
+    };
+
+    const handleCreateFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            fileInputLabel.value = file.name;
+            createFormData.value.path = file;
+        } else {
+            fileInputLabel.value = 'Elija una imagen';
+        }
+    };
+
+    const handleEditFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            editFileInputLabel.value = file.name;
+            editFormData.value.path = file;
+        } else {
+            editFileInputLabel.value = 'Elija una nueva imagen';
+        }
+    };
+    const handleCreateFichaChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            fileInputLabel.value = file.name;
+            createFormData.value.path = file;
+        } else {
+            fileInputLabel.value = 'Elija una imagen';
+        }
+    };
+    const handleEditFichaChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            editFileInputLabel.value = file.name;
+            editFormData.value.path = file;
+        } else {
+            editFileInputLabel.value = 'Elija una nueva imagen';
+        }
+    };
+    const openFicha = (fichaPath) => {
+        if (fichaPath) {
+            // Abrir en una nueva pestaña para descargar/ver el PDF
+            window.open(fichaPath, '_blank');
+        }
+    };
+    const submitCreateForm = () => {
+        // Crear FormData para enviar archivos
+        const formData = new FormData();
+
+        Object.keys(createFormData.value).forEach(key => {
+            formData.append(key, createFormData.value[key]);
+        });
+
+        // Usar la ruta, que puede ser una string o una función
+        const createUrl = typeof props.createRoute === 'function' ? props.createRoute() : props.createRoute;
+
+        router.post(createUrl, formData, {
+            onSuccess: (page) => {
+            // Accede al mensaje flash de la respuesta
+            if (page.props.flash && page.props.flash.message) {
+                notification({ message: page.props.flash.message, type: "success" });
+            } else {
+                notification({ message: "Creado correctamente", type: "success" });
+            }
+            closeCreateModal();
+            },
+            onError: (errors) => {
+                notification({ message: errors[0], type: "error" });
+            }
+        });
+    };
+
+    const submitEditForm = () => {
+        const formData = new FormData();
+
+        Object.keys(editFormData.value).forEach(key => {
+            if (key !== 'id') {
+                // Si el campo es 'path' y no se seleccionó un archivo nuevo, no lo agregamos
+                if (key === 'path' && typeof editFormData.value[key] === 'string') {
+                    return;
+                }
+                // Si el campo es 'ficha' y está vacío, no lo agregamos
+                if (key === 'ficha' && (!editFormData.value[key] || editFormData.value[key] === '')) {
+                    return;
+                }
+                formData.append(key, editFormData.value[key]);
+            }
+        });
+
+        formData.append('_method', 'PUT');
+
+        // Usar directamente la función updateRoute
+        const updateUrl = props.updateRoute(editFormData.value.id);
+
+        router.post(updateUrl, formData, {
+            onSuccess: (page) => {
+            // Accede al mensaje flash de la respuesta
+            if (page.props.flash && page.props.flash.message) {
+                notification({ message: page.props.flash.message, type: "success" });
+            } else {
+                notification({ message: "Actualizado correctamente", type: "success" });
+            }
+            closeEditModal();
+            },
+            onError: (errors) => {
+                notification({ message: errors[0], type: "error" });
+            }
+        });
+    };
+
+    const getCategoriaName = (categoriaId) => {
+        if (!props.categorias || !categoriaId) return 'N/A';
+        const categoria = props.categorias.find(cat => cat.id === categoriaId);
+        return categoria ? categoria.titulo.charAt(0).toUpperCase() + categoria.titulo.slice(1) : 'N/A';
+    };
+
+    const submitDeleteForm = () => {
+        // Usar directamente la función deleteRoute
+        const deleteUrl = props.deleteRoute(currentItemId.value);
+
+        router.delete(deleteUrl, {
+            onSuccess: (page) => {
+            // Accede al mensaje flash de la respuesta
+            if (page.props.flash && page.props.flash.message) {
+                notification({ message: page.props.flash.message, type: "success" });
+            } else {
+                notification({ message: "Eliminado correctamente", type: "success" });
+            }
+            closeDeleteModal();
+            },
+        });
+    };
+
+    const toggleDestacado = (id, isChecked) => {
+        // Usar directamente la función toggleDestacadoRoute
+        const toggleUrl = props.toggleDestacadoRoute(id);
+
+        fetch(toggleUrl, {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id: id,
+                destacado: isChecked ? 1 : 0
+            })
         })
-    })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                console.log("Destacado actualizado correctamente");
+                notification({ message: "Destacado actualizado correctamente", type: "success" });
             } else {
                 console.error("Error al actualizar el destacado");
             }
         });
-};
+    };
 </script>
 
 <template>
@@ -266,7 +312,7 @@ const toggleDestacado = (id, isChecked) => {
                                 :class="['grid-cell', column === 'path' ? 'grid-image-cell' : '']">
                                 <!-- Celda de imagen -->
                                 <template v-if="column === 'path'">
-                                    <img v-if="row.path" :src="`/storage/${row.path}`" alt="Imagen del producto"
+                                    <img v-if="row.path" :src="row.path" alt="Imagen del producto"
                                         class="grid-image">
                                     <div v-else class="grid-no-image">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400"
@@ -283,7 +329,7 @@ const toggleDestacado = (id, isChecked) => {
                                 <!-- Campo imagenes con enlace -->
                                 <template v-else-if="column === 'imagenes'">
                                     <div class="flex justify-center">
-                                        <a :href="`${props.imgsRoute}/${row.id}`"
+                                        <a :href="imgsRoute(row.id)"
                                             class="text-blue-900 hover:text-blue-500 transition duration-200">
                                             <svg xmlns="http://www.w3.org/2000/svg"
                                                 class="h-6 w-6 hover:scale-110 transform transition duration-200"

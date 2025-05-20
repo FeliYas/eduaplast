@@ -17,6 +17,7 @@ class SectoresController extends Controller
         $metadatos = Metadato::where('seccion', 'sectores')->first();
         $logos = Logo::whereIn('seccion', ['navbar', 'footer'])->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
-        return view('front.sectores', compact('sectores', 'metadatos', 'logos', 'contactos'));
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
+        return view('front.sectores', compact('sectores', 'metadatos', 'logos', 'contactos', 'whatsapp'));
     }
 }

@@ -2,14 +2,14 @@
 @section('title', 'Productos')
 
 @section('content')
-    <div class="max-w-[70%] mx-auto">
-        <div>
-            <div class="text-xs mt-10">
+    <div class="max-w-[80%] lg:max-w-[60%] mx-auto">
+        <div class="py-7">
+            <div class="text-xs">
                 <!-- Ruta de navegación -->
-                <div class="text-black hidden lg:block mt-8">
+                <div class="text-black hidden lg:block">
                     <a href="{{ route('home') }}" class="hover:underline">Inicio</a>
                     <span class="mx-[5px]">&gt;</span>
-                    <a href="{{ route('contacto') }}" class=" hover:underline">Contacto</a>
+                    <a href="{{ route('presupuesto') }}" class="hover:underline">Presupuesto</a>
                     <span class="mx-[5px]">&gt;</span>
                     <a href="{{ route('productos', ['id' => $categoria->id]) }}"
                         class="text-gray-500 hover:underline transition-all duration-300">{{ $categoria->titulo }}</a>
@@ -17,7 +17,7 @@
             </div>
         </div>
         <!-- Main content with sidebar and products -->
-        <div class="flex flex-col lg:flex-row gap-6 py-20 lg:py-10 lg:mb-27">
+        <div class="flex flex-col lg:flex-row gap-6 lg:py-10 lg:mb-27">
             <div class="w-full lg:w-1/4">
                 <h2 class="text-orange-700 font-bold text-xl py-4">Productos</h2>
                 <div class="border-t border-gray-200 text-black">
@@ -38,7 +38,7 @@
             </div>
 
             <div class="w-full lg::w-3/4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 py-4 lg:py-0">
                     @forelse($productos as $producto)
                         <div
                             class="border border-gray-200 overflow-hidden transition-transform transform hover:-translate-y-1 hover:shadow-lg duration-300 h-[396px]">
@@ -46,7 +46,7 @@
                                 href="{{ route('producto', ['id' => $producto->categoria->id, 'producto' => $producto->id]) }}">
 
                                 @if ($producto->imagenes->count() > 0)
-                                    <img src="{{ asset('storage/' . $producto->imagenes->first()->path) }}"
+                                    <img src="{{ asset($producto->imagenes->first()->path) }}"
                                         alt="{{ $producto->titulo }}"
                                         class="bg-gray-100 w-full h-72 object-cover transition-transform duration-500 hover:scale-105">
                                 @else

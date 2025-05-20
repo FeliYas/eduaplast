@@ -10,4 +10,9 @@ class Cliente extends Model
         'orden',
         'path',
     ];
+
+    public function getPathAttribute($value)
+    {
+        return asset('storage/' . $value);
+    }
 }

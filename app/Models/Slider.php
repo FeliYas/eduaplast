@@ -13,5 +13,9 @@ class Slider extends Model
         'descripcion',
     ];
 
+    public function getPathAttribute($value)
+    {
+        return asset('storage/' . $value);
+    }
     
 }

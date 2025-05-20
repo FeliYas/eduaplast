@@ -19,7 +19,6 @@ class ClienteController extends Controller
             'clientes' => $clientes,
             'logo' => $logo
         ]);
-
     }
     public function store(Request $request)
     {
@@ -30,7 +29,7 @@ class ClienteController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
 
         $imageName = null;
@@ -45,42 +44,43 @@ class ClienteController extends Controller
             'path'               => $imageName,
         ]);
 
-        // Redirigir con mensaje de éxito
-        return $this->success_response('Cliente creado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('clientes.dashboard')->with('message', 'Cliente creado exitosamente');
     }
     public function update(Request $request, $id)
     {
-        
+
         // Validar los campos del formulario
         $validator = Validator::make($request->all(), [
             'orden'                => 'nullable|string|max:255',
             'path'                 => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
 
         // Obtener el registro de cliente
         $cliente = Cliente::findOrFail($id);
 
-        // Manejar la actualización de la imagen principal (input "path")
         if ($request->hasFile('path')) {
             if ($cliente->path && Storage::disk('public')->exists($cliente->path)) {
                 Storage::disk('public')->delete($cliente->path);
             }
+            // Generar un nombre único para la nueva imagen
+            $imageName = uniqid() . '.' . $request->file('path')->getClientOriginalExtension();
 
-            $file = $request->file('path');
-            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('images', $fileName, 'public');
-        } else {
-            $filePath = $cliente->path; // Mantener la imagen anterior si no se sube una nueva
+            // Mover la imagen a la carpeta public/storage/images y obtener el nombre relativo
+            $filePath = $request->file('path')->storeAs('images', $imageName, 'public');
+
+            // Actualizar la ruta de la imagen
+            $cliente->path = 'images/' . $imageName; // Guardamos la ruta relativa de la imagen
         }
         $cliente->orden              = $request->orden;
-        $cliente->path               = $filePath;
         // Guardar los cambios en cliente
         $cliente->save();
 
-        return $this->success_response('Cliente actualizado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('clientes.dashboard')->with('message', 'Cliente actualizado exitosamente');
     }
 
     public function destroy($id)
@@ -96,7 +96,7 @@ class ClienteController extends Controller
         // Eliminar el registro de la base de datos
         $cliente->delete();
 
-        // Redirect or return response
-        return $this->success_response('Cliente eliminado exitosamente.');
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('clientes.dashboard')->with('message', 'Cliente eliminado exitosamente');
     }
 }

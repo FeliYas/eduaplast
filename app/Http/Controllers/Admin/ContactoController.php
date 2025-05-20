@@ -19,7 +19,7 @@ class ContactoController extends Controller
         $contacto = Contacto::first();
         $logo = Logo::where('seccion', 'dashboard')->first();
         $mapa = $contacto->iframe;
-        
+
         return Inertia::render('Admin/Contacto', [
             'contacto' => $contacto,
             'logo' => $logo,
@@ -40,9 +40,9 @@ class ContactoController extends Controller
             'iframe' => 'nullable|string',
         ]);
         if ($validator->fails()) {
-            return $this->error_response($validator->messages()->first());
+            return back()->witherrors($validator->messages()->first());
         }
-        
+
         $contacto = Contacto::findOrFail($id);
 
         $contacto->update([
@@ -52,6 +52,8 @@ class ContactoController extends Controller
             'whatsapp' => $request->whatsapp,
             'iframe' => $request->iframe,
         ]);
-        return $this->success_response('Contacto actualizado exitosamente.');
+        
+        // Redireccionar al index con un mensaje de éxito
+        return redirect()->route('contacto.dashboard')->with('message', 'Contacto actualizado exitosamente');
     }
 }

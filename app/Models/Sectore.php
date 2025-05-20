@@ -12,4 +12,8 @@ class Sectore extends Model
         'titulo',
     ];
 
+    public function getPathAttribute($value)
+    {
+        return asset('storage/' . $value);
+    }
 }

@@ -23,7 +23,8 @@ class HomeController extends Controller
         $novedades = Novedade::orderBy('orden', 'asc')->take(3)->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
         $clientes = Cliente::orderBy('orden', 'asc')->get();
-        return view('front.home', compact('logos', 'sliders', 'categorias', 'contenido', 'novedades', 'contactos', 'clientes'));
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
+        return view('front.home', compact('logos', 'sliders', 'categorias', 'contenido', 'novedades', 'contactos', 'clientes', 'whatsapp'));
 
     }
     

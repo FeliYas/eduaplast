@@ -13,4 +13,9 @@ class Novedade extends Model
         'titulo',
         'descripcion'
     ];
+
+    public function getPathAttribute($value)
+    {
+        return asset('storage/' . $value);
+    }
 }

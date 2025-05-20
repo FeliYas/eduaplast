@@ -23,7 +23,7 @@
           <p class="text-xs opacity-75 truncate">{{ email }}</p>
         </div>
         <div class="py-2">
-          <a href="/"
+          <a :href="route('home')"
             class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-200 transition-colors duration-200">
             <i class="fa-solid fa-home mr-3 text-main-color"></i>
             <span>Ir al inicio</span>

@@ -40,6 +40,7 @@ Route::get('/clientes', [ClientesaController::class, 'index'])->name('clientes')
 Route::get('/novedades', [NovedadesController::class, 'index'])->name('novedades');
 Route::get('/novedades/{id}', [NovedadesController::class, 'show'])->name('novedad');
 Route::get('/contacto', [FrontContactoController::class, 'index'])->name('contacto');
+Route::post('/contacto/enviar', [FrontContactoController::class, 'enviar'])->name('contacto.enviar');
 Route::get('/presupuesto', [PresupuestoController::class, 'index'])->name('presupuesto');
 Route::post('/presupuesto/agregar', [PresupuestoController::class, 'store'])->name('presupuesto.store');
 Route::post('/presupuesto/enviar', [PresupuestoController::class, 'enviar'])->name('presupuesto.enviar');
@@ -56,7 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //rutas de los sliders del dashboard
     Route::get('/admin/home/slider', [SliderController::class, 'index'])->name('admin.slider');
     Route::post('/admin/home/slider/store', [SliderController::class, 'store'])->name('slider.store');
-    Route::put('/admin/home/slider/update/{id}', [SliderController::class, 'update'])->name('slider.update');
+    Route::post('/admin/home/slider/update/{id}', [SliderController::class, 'update'])->name('slider.update');
     Route::delete('/admin/home/slider/delete/{id}', [SliderController::class, 'destroy'])->name('slider.destroy');
     //rutas de los contenidos del dashboard
     Route::get('/admin/home/contenido', [ContenidoController::class, 'index'])->name('contenido.dashboard');

@@ -13,25 +13,25 @@
                                 $extension = pathinfo($slider->path, PATHINFO_EXTENSION);
                             @endphp
                             @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                                <img src="{{ asset('storage/' . $slider->path) }}" alt="Slider Image"
-                                    class="w-full h-full object-cover" data-duration="6000">
+                                <img src="{{ asset($slider->path) }}" alt="Slider Image" class="w-full h-full object-cover"
+                                    data-duration="6000">
                             @elseif (in_array($extension, ['mp4', 'webm', 'ogg']))
                                 <video class="w-full h-full object-cover" autoplay muted onended="nextSlide()">
-                                    <source src="{{ asset('storage/' . $slider->path) }}" type="video/{{ $extension }}">
+                                    <source src="{{ asset($slider->path) }}" type="video/{{ $extension }}">
                                     Tu navegador no soporta el formato de video.
                                 </video>
                             @endif
                         </div>
 
                         <div class="absolute bg-black opacity-30 z-50"></div>
-                        <div class="absolute inset-0 flex z-20 max-w-[70%] mx-auto">
+                        <div class="absolute inset-0 flex z-20 max-w-[80%] lg:max-w-[60%] mx-auto">
                             <div class="flex flex-col gap-6 lg:gap-19 w-full justify-center">
                                 <div class="text-white ">
-                                    <div class="flex flex-col gap-4 max-w-[720px]">
-                                        <h1 class="text-2xl lg:text-[52px] leading-13 font-semibold">
+                                    <div class="flex flex-col gap-4 max-w-[650px]">
+                                        <h1 class="text-3xl lg:text-[54px] lg:leading-13 font-semibold">
                                             {{ $slider->titulo }}
                                         </h1>
-                                        <div class="custom-summernote text-xl">
+                                        <div class="custom-summernote text-lg lg:text-xl">
                                             <p>
                                                 {!! $slider->descripcion !!}
                                             </p>
@@ -39,14 +39,14 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <a href="{{route('categorias')}}" class="btn-home-1 w-50">Mas información</a>
+                                    <a href="{{ route('categorias') }}" class="btn-home-1 w-50">Mas información</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
-            <div class="absolute bottom-20 w-full flex z-30 left-[15%]">
+            <div class="absolute bottom-20 w-full flex z-30 left-[20%]">
                 <div class="flex space-x-1 lg:space-x-2">
                     @foreach ($sliders as $index => $slider)
                         <button
@@ -165,11 +165,11 @@
                 initSlider();
             });
         </script>
-        <div class="max-w-[70%] mx-auto py-25">
+        <div class="max-w-[80%] lg:max-w-[60%] mx-auto py-25">
             <div class="flex flex-col gap-6">
                 <div class="flex justify-between items-center">
                     <h2 class="titulo-home text-black">Productos</h2>
-                    <a href="{{route('categorias')}}" class="btn-home-2 w-[120px]">VER TODOS</a>
+                    <a href="{{ route('categorias') }}" class="btn-home-2 w-[140px] lg:w-[120px]">VER TODOS</a>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-4 w-full gap-6">
                     @foreach ($categorias as $categoria)
@@ -177,7 +177,7 @@
                             class="w-full h-[288px] group shadow-md hover:shadow-xl transition-shadow duration-300 rounded-xl overflow-hidden border border-gray-200">
                             <a href="" class="block w-full h-full">
                                 {{-- {{ route('productos', ['id' => $categoria->id]) }} --}}
-                                <img src="{{ asset('storage/' . $categoria->path) }}" alt="{{ $categoria->titulo }}"
+                                <img src="{{ asset($categoria->path) }}" alt="{{ $categoria->titulo }}"
                                     class="object-cover w-full h-[230px] transform group-hover:scale-105 transition-transform duration-500">
                                 <p
                                     class="text-black text-xl lg:text-[22px] text-center py-3 opacity-90 group-hover:opacity-100 transition-opacity duration-300">
@@ -190,22 +190,22 @@
             </div>
         </div>
         <div class="flex flex-col lg:flex-row bg-main-color gap-6 lg:gap-18">
-            <img src="{{ asset('storage/' . $contenido->path) }}" alt="Contenido de la pagina"
+            <img src="{{ asset($contenido->path) }}" alt="Contenido de la pagina"
                 class="lg:w-1/2 h-[500px] lg:h-[600px] object-cover opacity-0 -translate-x-20 transition-all duration-2000 ease-in-out scroll-fade-left">
             <div
-                class="lg:w-1/2 pr-[5%] pl-[5%] lg:pl-[0%] lg:pr-[15%] lg:mt-20 flex flex-col gap-2 lg:gap-10 opacity-0 translate-x-20 transition-all duration-2000 ease-in-out scroll-fade-right items-center lg:items-start">
+                class="lg:w-1/2 pr-[5%] pl-[5%] lg:pl-[0%] lg:pr-[20%] lg:mt-20 flex flex-col gap-2 lg:gap-10 opacity-0 translate-x-20 transition-all duration-2000 ease-in-out scroll-fade-right items-center lg:items-start">
                 <h2 class="titulo-home mb-1.5">{{ $contenido->titulo }}</h2>
                 <div class="custom-summernote lg:text-xl text-center lg:text-left">
                     <p>{!! $contenido->descripcion !!}</p>
                 </div>
-                <a href="{{route('nosotros')}}" class="btn-home-2 mb-4 mt-0 lg:mb-0 lg:mt-10">Mas información</a>
+                <a href="{{ route('nosotros') }}" class="btn-home-2 mb-4 mt-0 lg:mb-0">Mas información</a>
             </div>
         </div>
-        <div class="max-w-[70%] mx-auto py-20 mb-4.5">
+        <div class="max-w-[80%] lg:max-w-[60%] mx-auto py-20 mb-4.5">
             <div class="flex flex-col gap-6">
                 <div class="flex justify-between items-center">
                     <h2 class="titulo-home text-black">Novedades</h2>
-                    <a href="{{route('novedades')}}" class="btn-home-2 w-[120px]">VER TODAS</a>
+                    <a href="{{ route('novedades') }}" class="btn-home-2 w-[120px]">VER TODAS</a>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 w-full gap-6">
                     @foreach ($novedades as $novedad)
@@ -217,10 +217,10 @@
             </div>
         </div>
         <div class="bg-gray-100 py-16 pb-20">
-            <div class="flex flex-col gap-6 max-w-[70%] mx-auto">
+            <div class="flex flex-col gap-6 max-w-[80%] lg:max-w-[60%] mx-auto">
                 <div class="flex justify-between items-center">
                     <h2 class="titulo-home text-black">Clientes</h2>
-                    <a href="{{route('clientes')}}" class="btn-home-2 w-[120px]">Ver
+                    <a href="{{ route('clientes') }}" class="btn-home-2 w-[120px]">Ver
                         todos</a>
                 </div>
                 <div class="relative" x-data="{
@@ -277,7 +277,7 @@
                                 <div class="grid grid-cols-6 justify-between gap-6 min-w-full py-4">
                                     @foreach ($chunk as $cliente)
                                         <div class="h-[190px] max-w-[300px] bg-white p-4 rounded-xl shadow-md">
-                                            <img src="{{ asset('storage/' . $cliente->path) }}" alt="cliente"
+                                            <img src="{{ asset($cliente->path) }}" alt="cliente"
                                                 class="w-full h-full object-contain transition-all duration-300 filter grayscale hover:grayscale-0">
                                         </div>
                                     @endforeach
@@ -297,7 +297,7 @@
                             @foreach ($clientes as $cliente)
                                 <div class="min-w-full flex justify-center">
                                     <div class="max-h-[190px] max-w-[300px] w-full bg-white">
-                                        <img src="{{ asset('storage/' . $cliente->path) }}" alt="cliente"
+                                        <img src="{{ asset($cliente->path) }}" alt="cliente"
                                             class="w-full h-full object-cover transition-all duration-300 filter lg:grayscale hover:grayscale-0">
                                     </div>
                                 </div>

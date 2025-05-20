@@ -20,4 +20,24 @@ class Nosotro extends Model
         'titulo3',
         'descripcion3'
     ];
+
+    public function getPathAttribute($value)
+    {
+        return asset('storage/' . $value);
+    }
+
+    public function getImagen1Attribute($value)
+    {
+        return asset('storage/' . $value);
+    }
+    
+    public function getImagen2Attribute($value)
+    {
+        return asset('storage/' . $value);
+    }
+    
+    public function getImagen3Attribute($value)
+    {
+        return asset('storage/' . $value);
+    }
 }

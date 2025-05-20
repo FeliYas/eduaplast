@@ -2,13 +2,17 @@
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import DataTable from '@/components/DataTable.vue';
 
+defineOptions({
+    layout: DashboardLayout
+});
+
 // Definición de las columnas
 const columns = ['orden', 'path'];
 
-// Definición de rutas
-const createRoute = '/admin/clientes/store';
-const updateRoute = '/admin/clientes/update/__ID__';
-const deleteRoute = '/admin/clientes/destroy/__ID__';
+// Definición de rutas dinámicas
+const createRoute = route('clientes.store');
+const updateRoute = (id) => route('clientes.update', { id });
+const deleteRoute = (id) => route('clientes.destroy', { id });
 
 const props = defineProps({
     logo: {
@@ -23,15 +27,13 @@ const props = defineProps({
 </script>
 
 <template>
-    <DashboardLayout :logo="logo">
-        <div>
-            <div class="py-3 text-xl text-gray-700">
-                <h1>Clientes</h1>
-            </div>
-            <!-- Línea -->
-            <hr class="border-t-[3px] border-main-color rounded">
-            <DataTable :columns="columns" :data="clientes" :createRoute="createRoute" :updateRoute="updateRoute"
-                :deleteRoute="deleteRoute" />
+    <div>
+        <div class="py-3 text-xl text-gray-700">
+            <h1>Clientes</h1>
         </div>
-    </DashboardLayout>
+        <!-- Línea -->
+        <hr class="border-t-[3px] border-main-color rounded">
+        <DataTable :columns="columns" :data="clientes" :createRoute="createRoute" :updateRoute="updateRoute"
+            :deleteRoute="deleteRoute" />
+    </div>
 </template>

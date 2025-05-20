@@ -2,40 +2,43 @@
 
 <footer class="text-white">
     <div class="bg-main-color ">
-        <div class="2xl:flex grid grid-cols-1 lg:grid-cols-2 gap-16 justify-between max-w-[70%] mx-auto py-22">
-            <div class="flex justify-center lg:justify-start lg:block">
+        <div
+            class="2xl:flex grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-0 justify-between max-w-[80%] lg:max-w-[60%] mx-auto py-22">
+            <div class="flex justify-center lg:justify-start lg:block lg:w-1/3">
                 @if (Route::currentRouteName() == 'home')
-                    <img src="{{ asset('storage/' . $logos[2]->path) }}" alt="">
+                    <img src="{{ asset($logos[2]->path) }}" alt="">
                 @else
-                    <img src="{{ asset('storage/' . $logos[1]->path) }}" alt="">
+                    <img src="{{ asset($logos[1]->path) }}" alt="">
                 @endif
 
 
             </div>
-            <div>
+            <div class="lg:w-1/3">
                 <h3 class="font-semibold text-[20px]">Secciones</h3>
                 <div
-                    class="grid grid-flow-col grid-rows-4 gap-x-20 gap-y-2 mt-12 lg:text-sm 2xl:text-[15px] text-gray-300">
+                    class="grid grid-flow-col grid-rows-4 gap-x-2 gap-y-2 mt-8 lg:text-sm 2xl:text-[15px] text-gray-300">
                     <a href="{{ route('nosotros') }}" class="hover:underline">Nosotros</a>
                     <a href="{{ route('categorias') }}" class="hover:underline">Productos</a>
                     <a href="{{ route('sectores') }}" class="hover:underline">Sectores</a>
                     <a href="{{ route('matriceria') }}" class="hover:underline">Matriceria propia</a>
-                    <a href="{{ route('novedades') }}" class="hover:underline">Novedades</a>
                     <a href="{{ route('clientes') }}" class="hover:underline">Clientes</a>
-                    <a href="{{ route('contacto') }}" class="hover:underline">Contacto</a>
+                    <a href="{{ route('novedades') }}" class="hover:underline">Novedades</a>
                     <a href="{{ route('presupuesto') }}" class="hover:underline">Presupuesto</a>
+                    <a href="{{ route('contacto') }}" class="hover:underline">Contacto</a>
                 </div>
             </div>
-            <div>
+            <div class="lg:w-1/3 pl-0 lg:pl-2">
                 <h3 class="font-semibold text-[20px]">Contacto</h3>
-                <div class="flex flex-col gap-4 items-start text-center justify-center mt-8 ">
+                <div class="flex flex-col gap-4 items-start text-center justify-center mt-2">
                     @foreach ($contactos as $contacto)
                         @if ($contacto->direccion)
                             <a href="https://maps.google.com/?q={{ urlencode($contacto->direccion) }}" target="_blank"
                                 class="block no-underline text-inherit hover:text-main-color">
-                                <p class="lg:text-sm 2xl:text-[15px] mt-4.5">
-                                    <span class="flex items-center gap-2">
-                                        <svg width="30" height="30" viewBox="0 0 20 20" fill="none"
+                                <p class="lg:text-sm 2xl:text-[15px] mt-4.5 max-w-[320px]">
+                                    <span class="flex items-center gap-2 text-left">
+
+
+                                        <svg width="40" height="40" viewBox="0 0 20 20" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="M16.6668 8.33341C16.6668 13.3334 10.0002 18.3334 10.0002 18.3334C10.0002 18.3334 3.3335 13.3334 3.3335 8.33341C3.3335 6.5653 4.03588 4.86961 5.28612 3.61937C6.53636 2.36913 8.23205 1.66675 10.0002 1.66675C11.7683 1.66675 13.464 2.36913 14.7142 3.61937C15.9644 4.86961 16.6668 6.5653 16.6668 8.33341Z"
@@ -53,7 +56,7 @@
                         @if ($contacto->email)
                             <a href="mailto:{{ $contacto->email }}"
                                 class="block no-underline text-inherit hover:text-main-color">
-                                <p class="lg:text-sm 2xl:text-[15px] mt-4">
+                                <p class="lg:text-sm 2xl:text-[15px]">
                                     <span class="flex items-center gap-2">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -74,7 +77,7 @@
                         @if ($contacto->telefono)
                             <a href="tel:{{ preg_replace('/\s+/', '', $contacto->telefono) }}"
                                 class="block no-underline text-inherit hover:text-main-color">
-                                <p class="lg:text-sm 2xl:text-[15px] mt-4">
+                                <p class="lg:text-sm 2xl:text-[15px]">
                                     <span class="flex items-center gap-2">
                                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
@@ -101,8 +104,9 @@
         </div>
     </div>
     <div class="bg-main-color">
-        <hr class="max-w-[70%] mx-auto border-[#465681]">
-        <div class="flex justify-between items-center max-w-[70%] mx-auto py-6 text-xs lg:text-base text-gray-300">
+        <hr class="max-w-[80%] lg:max-w-[60%] mx-auto border-[#465681]">
+        <div
+            class="flex flex-col lg:flex-row justify-between items-center max-w-[80%] lg:max-w-[60%] mx-auto py-6 text-sm lg:text-base text-gray-300">
             <p>© Copyright 2025 Eduaplast. Todos los derechos reservados</p>
             <p>By
                 <a href="https://osole.com.ar/#" class="font-bold hover:underline hover:text-blue-600">

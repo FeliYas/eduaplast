@@ -22,10 +22,25 @@ export default defineConfig({
             },
         }),
     ],
-    resolve: {
-        alias: {
-            '@': path.resolve(__dirname, './resources/js'),
-            'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
+    base: 'eduaplast/build/',
+    build: {
+        outDir: resolve(__dirname, 'public/build'),
+        emptyOutDir: true,
+        sourcemap: true,
+        rollupOptions: {
+            output: {
+                // Ajusta el nombre de los archivos según tus necesidades
+                chunkFileNames: 'assets/[name]-[hash].js',
+                entryFileNames: 'assets/[name]-[hash].js',
+                assetFileNames: 'assets/[name]-[hash][extname]',
+            },
         },
     },
+    // resolve: {
+    //     alias: {
+    //         '@': path.resolve(__dirname, './resources/js'),
+    //         'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
+    //     },
+    // },
+    
 });

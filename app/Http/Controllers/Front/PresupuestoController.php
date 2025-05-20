@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PresupuestoMail;
 use App\Models\Contacto;
 use App\Models\Logo;
 use App\Models\Producto;
@@ -17,6 +18,7 @@ class PresupuestoController extends Controller
         $logos = Logo::whereIn('seccion', ['navbar', 'footer'])->get();
         $contactos = Contacto::select('direccion', 'email', 'telefono')->get();
         $productoId = $request->query('producto');
+        $whatsapp = Contacto::select('whatsapp')->first()->whatsapp;
 
         $carrito = session()->get('carrito_consulta', []);
 
@@ -27,11 +29,10 @@ class PresupuestoController extends Controller
                 session(['carrito_consulta' => $carrito]);
             }
         }
-        return view('front.presupuesto', compact('logos', 'contactos', 'carrito'));
-
+        return view('front.presupuesto', compact('logos', 'contactos', 'carrito', 'whatsapp'));
     }
 
-    public function agregarProductoConsulta(Request $request)
+    public function store(Request $request)
     {
         $productoId = $request->input('producto_id');
 
@@ -45,7 +46,7 @@ class PresupuestoController extends Controller
         return redirect()->route('presupuesto');
     }
 
-    public function eliminarProductoConsulta($id)
+    public function delete($id)
     {
         $carrito = session()->get('carrito_consulta', []);
 
@@ -57,7 +58,7 @@ class PresupuestoController extends Controller
         return redirect()->route('presupuesto');
     }
 
-    public function enviarConsulta(Request $request)
+    public function enviar(Request $request)
     {
         if ($request->input('carrito_vacio') == 1) {
             return redirect()->back()->with('error', 'No hay productos seleccionados en el carrito. Seleccioná productos para enviar la consulta.');
@@ -66,75 +67,42 @@ class PresupuestoController extends Controller
         try {
             $validated = $request->validate([
                 'nombre' => 'required|string|max:255',
-                'apellido' => 'required|string|max:255',
-                'telefono' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
-                'provincia' => 'required|string|max:255',
-                'localidad' => 'required|string|max:255',
-                'categoria' => 'required|string|max:255',
-                'g-recaptcha-response' => 'required',
+                'telefono' => 'required|string|max:255',
+                'empresa' => 'nullable|string|max:255',
+                'mensaje' => 'required|string',
+                'archivo' => 'nullable|file|max:2048|mimes:pdf,xlsx,xls,csv,png,jpg,jpeg',
             ], [
                 'required' => 'El campo :attribute es obligatorio',
                 'email' => 'El campo debe ser un email válido',
+                'file' => 'El archivo debe ser válido',
             ]);
-            // Verificar el token de reCAPTCHA
-            $recaptcha = $this->verificarRecaptcha($request->input('g-recaptcha-response'));
 
-            if (!$recaptcha['success']) {
-                return redirect()->back()
-                    ->withErrors(['recaptcha' => 'La verificación de seguridad ha fallado. Por favor, inténtalo de nuevo.'])
-                    ->withInput();
-            }
-
-            // Si el score es muy bajo (posible bot), puedes rechazar la solicitud
-            if ($recaptcha['score'] < 0.7) {
-                return redirect()->back()
-                    ->withErrors(['recaptcha' => 'La verificación de seguridad ha detectado actividad sospechosa. Por favor, inténtalo de nuevo más tarde.'])
-                    ->withInput();
-            }
             $carrito = session('carrito_consulta', []);
 
-            $cantidades = $request->input('cantidades', []);
-
             $mailData = [
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido,
-                'telefono' => $request->telefono,
-                'email' => $request->email,
-                'provincia' => $request->provincia,
-                'localidad' => $request->localidad,
-                'categoria' => $request->categoria,
-                'mensaje' => $request->mensaje,
-                'productos' => [],
-                'fecha' => now()->format('d/m/Y H:i:s'),
+                'nombre' => $validated['nombre'],
+                'email' => $validated['email'],
+                'telefono' => $validated['telefono'],
+                'empresa' => $validated['empresa'] ?? 'No especificada',
+                'mensaje' => $validated['mensaje'],
+                'productos' => $carrito,
             ];
 
-
-            foreach ($carrito as $producto) {
-                $cantidad = isset($cantidades[$producto->id]) ? $cantidades[$producto->id] : 1;
-
-                $mailData['productos'][] = [
-                    'id' => $producto->id,
-                    'nombre' => $producto->nombre,
-                    'imagen' => $producto->imagen,
-                    'cantidad' => $cantidad,
-                ];
+            $archivoPath = null;
+            if ($request->hasFile('archivo')) {
+                $archivoPath = $request->file('archivo')->store('presupuestos', 'public');
             }
-
-            Mail::to(config('felipe3456lk@gmail.com'))->send(new ConsultaProductos($mailData));
+            
+            Mail::to(config('mail.from.address'))->send(new PresupuestoMail($mailData, $carrito, $archivoPath));
 
             session()->forget('carrito_consulta');
 
             return redirect()->back()->with('success', '¡Tu consulta fue enviada correctamente! Te contactaremos pronto.');
         } catch (\Exception $e) {
-            Log::error('Error al enviar correo de consulta: ' . $e->getMessage());
+            Log::error('Error al enviar correo de presupuesto: ' . $e->getMessage());
 
-            if ($e instanceof \Illuminate\Validation\ValidationException) {
-                throw $e;
-            }
-
-            return redirect()->back()->with('error', 'Hubo un problema al enviar tu consulta. Por favor, intenta nuevamente más tarde.')
-                ->withInput();
+            return redirect()->back()->with('error', 'Hubo un problema al enviar tu consulta. Por favor, intenta nuevamente más tarde.');
         }
     }
 }

@@ -2,28 +2,27 @@
 @section('title', ' Producto')
 
 @section('content')
-    <div class="max-w-[70%] mx-auto">
-        <div>
-            <div class="text-xs mt-10">
+    <div class="max-w-[80%] lg:max-w-[60%] mx-auto">
+
+        <div class="py-7">
+            <div class="text-xs">
                 <!-- Ruta de navegación -->
-                <div class="text-black hidden lg:block mt-8">
+                <div class="text-black hidden lg:block">
                     <a href="{{ route('home') }}" class="hover:underline">Inicio</a>
                     <span class="mx-[5px]">&gt;</span>
-                    <a href="{{ route('contacto') }}" class=" hover:underline">Contacto</a>
+                    <a href="{{ route('presupuesto') }}" class="hover:underline">Presupuesto</a>
                     <span class="mx-[5px]">&gt;</span>
                     <a href="{{ route('productos', ['id' => $categoria->id]) }}"
-                        class=" hover:underline transition-all duration-300">{{ $categoria->titulo }}</a>
-
+                        class="hover:underline transition-all duration-300">{{ $categoria->titulo }}</a>
                     <span class="mx-[5px]">&gt;</span>
                     <span class="text-gray-500">{{ $producto->titulo }}</span>
                 </div>
             </div>
         </div>
-
         <!-- Main content with sidebar and product detail -->
-        <div class="flex gap-6 py-20 lg:py-10 lg:mb-27">
+        <div class="flex flex-col lg:flex-row gap-6 lg:py-10 lg:mb-27">
             <!-- Sidebar (1/4 width) -->
-            <div class="w-full md:w-1/4 hidden lg:block">
+            <div class="w-full md:w-1/4 block">
                 <div class="border-t border-gray-200 text-black">
                     @foreach ($categorias as $cat)
                         <a href="{{ route('productos', ['id' => $cat->id]) }}"
@@ -48,7 +47,7 @@
                         <!-- Main Image -->
                         <div class="mb-4 flex items-center justify-center">
                             @if ($producto->imagenes->first())
-                                <img id="mainImage" src="{{ asset('storage/' . $producto->imagenes->first()->path) }}"
+                                <img id="mainImage" src="{{ asset($producto->imagenes->first()->path) }}"
                                     alt="{{ $producto->titulo }}"
                                     class="w-full object-contain transition-opacity duration-300 ease-in-out">
                             @else
@@ -65,8 +64,8 @@
                             @foreach ($producto->imagenes as $imagen)
                                 <div class="border border-gray-200 w-24 h-24 cursor-pointer hover:border-main-color flex-shrink-0
                                           {{ $loop->first ? 'border-second-color' : '' }}"
-                                    onclick="changeMainImage('{{ asset('storage/' . $imagen->path) }}', this)">
-                                    <img src="{{ asset('storage/' . $imagen->path) }}" alt="Thumbnail"
+                                    onclick="changeMainImage('{{ asset($imagen->path) }}', this)">
+                                    <img src="{{ asset($imagen->path) }}" alt="Thumbnail"
                                         class="w-full h-full object-contain">
                                 </div>
                             @endforeach
@@ -74,7 +73,7 @@
                     </div>
 
                     <!-- Product Info -->
-                    <div class="w-full md:w-1/2 text-black h-[487px] flex flex-col justify-between">
+                    <div class="w-full md:w-1/2 text-black lg:h-[487px] flex flex-col lg:justify-between">
                         <div>
                             <h1 class="font-bold text-orange-700">{{ $producto->categoria->titulo }}</h1>
                             <h1 class="text-[28px] font-bold ">{{ $producto->titulo }}</h1>
@@ -82,11 +81,11 @@
                                 {!! $producto->descripcion !!}
                             </div>
                         </div>
-                        <div class="flex flex-col justify-end mb-10">
+                        <div class="flex flex-col justify-end mt-10 lg:mt-0 mb-10 lg:mb-20">
                             @if ($producto->ficha)
                                 <div class="flex items-center justify-center gap-6">
-                                    <a href="{{ asset('storage/' . $producto->ficha) }}"
-                                        download="{{ basename($producto->ficha) }}" class="btn-secondary-home">
+                                    <a href="{{ asset($producto->ficha) }}" download="{{ basename($producto->ficha) }}"
+                                        class="btn-secondary-home">
                                         Ficha técnica
                                     </a>
                                     <a href="{{ route('presupuesto', ['producto' => $producto->id]) }}" class="btn-home-1">
@@ -95,7 +94,8 @@
                                 </div>
                             @else
                                 <div class="flex gap-6">
-                                    <a href="{{ route('presupuesto', ['producto' => $producto->id]) }}" class="btn-home-1 w-full">
+                                    <a href="{{ route('presupuesto', ['producto' => $producto->id]) }}"
+                                        class="btn-home-1 w-full">
                                         Agregar al presupuesto
                                     </a>
                                 </div>
@@ -116,7 +116,7 @@
                                         href="{{ route('producto', ['id' => $prodRelacionado->categoria->id, 'producto' => $prodRelacionado->id]) }}">
 
                                         @if ($prodRelacionado->imagenes->count() > 0)
-                                            <img src="{{ asset('storage/' . $prodRelacionado->imagenes->first()->path) }}"
+                                            <img src="{{ asset($prodRelacionado->imagenes->first()->path) }}"
                                                 alt="{{ $prodRelacionado->titulo }}"
                                                 class="bg-gray-100 w-full h-72 object-cover transition-transform duration-500 hover:scale-105">
                                         @else

@@ -2,10 +2,10 @@
 <nav class="w-full z-50" x-data="navbarData">
     <!-- Versión móvil: Logo y menú hamburguesa -->
     <div class="bg-main-color lg:hidden">
-        <div class="flex justify-between items-center h-[70px] max-w-[70%] mx-auto">
+        <div class="flex justify-between items-center h-[70px] max-w-[80%] lg:max-w-[60%] mx-auto">
             <div>
                 <a href="{{ route('home') }}">
-                    <img src="{{ asset('storage/' . (Route::currentRouteName() == 'home' ? $logos[0]->path : $logos[1]->path)) }}"
+                    <img src="{{ asset(Route::currentRouteName() == 'home' ? $logos[0]->path : $logos[1]->path) }}"
                         alt="logo" class="w-20">
                 </a>
             </div>
@@ -18,7 +18,7 @@
     </div>
     <div class="lg:hidden bg-white shadow-lg overflow-hidden transition-all duration-300 absolute w-full z-40"
         :class="mobileMenuOpen ? 'max-h-screen' : 'max-h-0'" x-cloak>
-        <div class="flex flex-col px-4 py-2 ">
+        <div class="flex flex-col px-4 py-2 text-black">
             <a href="{{ route('nosotros') }}" class="py-2 border-b border-gray-200">Nosotros</a>
             <a href="{{ route('categorias') }}" class="py-2 border-b border-gray-200">Productos</a>
             <a href="{{ route('sectores') }}" class="py-2 border-b border-gray-200">Sectores</a>
@@ -26,6 +26,7 @@
             <a href="{{ route('clientes') }}" class="py-2 border-b border-gray-200">Clientes</a>
             <a href="{{ route('novedades') }}" class="py-2 border-b border-gray-200">Novedades</a>
             <a href="{{ route('contacto') }}" class="py-2 border-b border-gray-200">Contacto</a>
+            <a href="{{ route('presupuesto') }}" class="py-2 border-b border-gray-200">Presupuesto</a>
             <div class="flex items-center py-2">
                 <i class="fa-solid fa-envelope mr-2 text-gray-600"></i>
                 @foreach ($contactos as $contacto)
@@ -39,10 +40,10 @@
         </div>
     </div>
     <div class="hidden lg:block py-4 bg-white border-b border-gray-200 fixed w-full h-[123px] ">
-        <div class="max-w-[70%] mx-auto flex justify-between items-center relative">
+        <div class="max-w-[80%] lg:max-w-[60%] mx-auto flex justify-between items-center relative">
             <div>
                 <a href="{{ route('home') }}">
-                    <img src="{{ asset('storage/' . $logos[0]->path) }}" alt="logo">
+                    <img src="{{ asset($logos[0]->path) }}" alt="logo">
                 </a>
             </div>
             <div class="flex lg:gap-3 2xl:gap-5 lg:text-[13px] 2xl:text-base relative items-center text-black">
@@ -71,7 +72,7 @@
                     class="relative {{ $currentRoute == 'contacto' ? 'font-bold' : '' }}">
                     Contacto
                 </a>
-                <a href="{{route('presupuesto')}}" class="btn-home-2 w-[226px]">Solicitud de presupuesto</a>
+                <a href="{{ route('presupuesto') }}" class="btn-home-2 w-[226px]">Solicitud de presupuesto</a>
             </div>
         </div>
     </div>
